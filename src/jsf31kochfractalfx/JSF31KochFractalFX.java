@@ -7,6 +7,7 @@ package jsf31kochfractalfx;
 import calculate.*;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -15,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -55,6 +57,14 @@ public class JSF31KochFractalFX extends Application {
     private Canvas kochPanel;
     private final int kpWidth = 500;
     private final int kpHeight = 500;
+
+    //ProgressBar
+    private final ProgressBar progressBarLeft = new ProgressBar();
+    private final ProgressBar progressBarRight = new ProgressBar();
+    private final ProgressBar progressBarBottom = new ProgressBar();
+    private Task taskLeft = null;
+    private Task taskRight = null;
+    private Task taskBottom = null;
     
     @Override
     public void start(Stage primaryStage) {
@@ -121,40 +131,68 @@ public class JSF31KochFractalFX extends Application {
         // Button to fit Koch fractal in Koch panel
         Button buttonFitFractal = new Button();
         buttonFitFractal.setText("Fit Fractal");
-        buttonFitFractal.setOnAction(new EventHandler<ActionEvent>() {
+        buttonFitFractal.setOnAction(new EventHandler<ActionEvent>()
+        {
             @Override
-            public void handle(ActionEvent event) {
+            public void handle(ActionEvent event)
+            {
                 fitFractalButtonActionPerformed(event);
             }
         });
         grid.add(buttonFitFractal, 14, 6);
         
         // Add mouse clicked event to Koch panel
-        kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED,
-            new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    kochPanelMouseClicked(event);
-                }
-            });
-        
-        // Add mouse pressed event to Koch panel
-        kochPanel.addEventHandler(MouseEvent.MOUSE_PRESSED,
-            new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    kochPanelMousePressed(event);
-                }
-            });
-        
-        // Add mouse dragged event to Koch panel
-        kochPanel.setOnMouseDragged(new EventHandler<MouseEvent>() {
+        kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
+        {
             @Override
-            public void handle(MouseEvent event) {
-                kochPanelMouseDragged(event);
+            public void handle(MouseEvent event)
+            {
+                kochPanelMouseClicked(event);
             }
         });
         
+        // Add mouse pressed event to Koch panel
+        kochPanel.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>()
+                                  {
+                                      @Override
+                                      public void handle(MouseEvent event)
+                                      {
+                                          kochPanelMousePressed(event);
+                                      }
+                                  });
+        
+        // Add mouse dragged event to Koch panel
+        kochPanel.setOnMouseDragged(new EventHandler<MouseEvent>()
+        {
+            @Override
+            public void handle(MouseEvent event)
+            {
+                kochPanelMouseDragged(event);
+            }
+        });
+
+
+        //TODO Add ProgressBar to GUI
+        Label LeftLabel = new Label("Left Progress");
+        Label lblLeftCalc = new Label(". . . . .");
+        grid.add(lblLeftCalc, 7, 10);
+        grid.add(LeftLabel, 3, 10);
+        grid.add(progressBarLeft, 5, 10);
+
+        Label RightLabel = new Label("Right Progress");
+        Label lblRightCalc = new Label(". . . . .");
+        grid.add(lblRightCalc, 7, 11);
+        grid.add(RightLabel, 3, 11);
+        grid.add(progressBarRight, 5, 11);
+
+        Label BottomLabel = new Label("Bottom Progress");
+        Label lblBottomCalc = new Label(". . . . .");
+        grid.add(lblBottomCalc, 7, 12);
+        grid.add(BottomLabel, 3, 12);
+        grid.add(progressBarBottom, 5, 12);
+
+
+
         // Create Koch manager and set initial level
         resetZoom();
         kochManager = new KochManager(this);
@@ -162,7 +200,7 @@ public class JSF31KochFractalFX extends Application {
         
         // Create the scene and add the grid pane
         Group root = new Group();
-        Scene scene = new Scene(root, kpWidth+50, kpHeight+170);
+        Scene scene = new Scene(root, kpWidth+50, kpHeight+300);
         root.getChildren().add(grid);
         
         // Define title and assign the scene for main window
@@ -200,7 +238,7 @@ public class JSF31KochFractalFX extends Application {
         }
         
         // Draw line
-        gc.strokeLine(e1.X1,e1.Y1,e1.X2,e1.Y2);
+        gc.strokeLine(e1.X1, e1.Y1, e1.X2, e1.Y2);
     }
     
     public void setTextNrEdges(String text) {
@@ -216,9 +254,11 @@ public class JSF31KochFractalFX extends Application {
     }
     
     public void requestDrawEdges() {
-        Platform.runLater(new Runnable(){
+        Platform.runLater(new Runnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
                 kochManager.drawEdges();
             }
         });
@@ -230,6 +270,20 @@ public class JSF31KochFractalFX extends Application {
             currentLevel++;
             labelLevel.setText("Level: " + currentLevel);
             kochManager.changeLevel(currentLevel);
+
+            if (taskLeft != null) {
+                taskLeft.cancel();
+            }
+            if (taskRight != null) {
+                taskRight.cancel();
+            }
+            if (taskBottom != null) {
+                taskBottom.cancel();
+            }
+            createTask();
+            new Thread(taskLeft).start();
+            new Thread(taskRight).start();
+            new Thread(taskBottom).start();
         }
     } 
     
@@ -292,6 +346,32 @@ public class JSF31KochFractalFX extends Application {
                 e.X2 * zoom + zoomTranslateX,
                 e.Y2 * zoom + zoomTranslateY,
                 e.color);
+    }
+
+
+    private void createTask() {
+        if (taskLeft != null) {
+            progressBarLeft.progressProperty().unbind();
+        }
+        if (taskRight != null) {
+            progressBarRight.progressProperty().unbind();
+        }
+        if (taskBottom != null) {
+            progressBarBottom.progressProperty().unbind();
+        }
+
+        taskLeft = new MyTask("TaskLeft");
+        taskRight = new MyTask("TaskRight");
+        taskBottom = new MyTask("TaskBottom");
+
+        progressBarLeft.setProgress(0);
+        progressBarLeft.progressProperty().bind(taskLeft.progressProperty());
+
+        progressBarRight.setProgress(0);
+        progressBarRight.progressProperty().bind(taskRight.progressProperty());
+
+        progressBarBottom.setProgress(0);
+        progressBarBottom.progressProperty().bind(taskBottom.progressProperty());
     }
 
     /**
