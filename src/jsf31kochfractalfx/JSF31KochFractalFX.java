@@ -246,6 +246,31 @@ public class JSF31KochFractalFX extends Application {
         // Draw line
         gc.strokeLine(e1.X1, e1.Y1, e1.X2, e1.Y2);
     }
+
+    public void drawWhiteEdge(Edge e) {
+        // Graphics
+        GraphicsContext gc = kochPanel.getGraphicsContext2D();
+
+        // Adjust edge for zoom and drag
+        Edge e1 = edgeAfterZoomAndDrag(e);
+
+        // Set line color
+        gc.setStroke(Color.WHITE);
+
+        // Set line width depending on level
+        if (currentLevel <= 3) {
+            gc.setLineWidth(2.0);
+        }
+        else if (currentLevel <=5 ) {
+            gc.setLineWidth(1.5);
+        }
+        else {
+            gc.setLineWidth(1.0);
+        }
+
+        // Draw line
+        gc.strokeLine(e1.X1, e1.Y1, e1.X2, e1.Y2);
+    }
     
     public void setTextNrEdges(String text) {
         labelNrEdgesText.setText(text);
@@ -276,22 +301,6 @@ public class JSF31KochFractalFX extends Application {
             currentLevel++;
             labelLevel.setText("Level: " + currentLevel);
             kochManager.changeLevel(currentLevel);
-
-            updateTasks();
-            if (taskLeft != null) {
-                taskLeft.cancel();
-            }
-            if (taskRight != null) {
-                taskRight.cancel();
-            }
-            if (taskBottom != null) {
-                taskBottom.cancel();
-            }
-            createTask();
-            updateTasks();
-            new Thread(taskLeft).start();
-            new Thread(taskRight).start();
-            new Thread(taskBottom).start();
         }
     } 
     
@@ -357,43 +366,31 @@ public class JSF31KochFractalFX extends Application {
     }
 
 
-    private void createTask() {
-        updateTasks();
-        if (taskLeft != null) {
-            progressBarLeft.progressProperty().unbind();
-            lblLeftCalc.textProperty().unbind();
-        }
-        if (taskRight != null) {
-            progressBarRight.progressProperty().unbind();
-            lblRightCalc.textProperty().unbind();
-        }
-        if (taskBottom != null) {
-            progressBarBottom.progressProperty().unbind();
-            lblBottomCalc.textProperty().unbind();
-        }
-
-        kochManager.createTasks();
-        updateTasks();
-
-        progressBarLeft.setProgress(0);
-        progressBarLeft.progressProperty().bind(taskLeft.progressProperty());
-        lblLeftCalc.textProperty().bind(taskLeft.messageProperty());
-
-        progressBarRight.setProgress(0);
-        progressBarRight.progressProperty().bind(taskRight.progressProperty());
-        lblRightCalc.textProperty().bind(taskRight.messageProperty());
-
-        progressBarBottom.setProgress(0);
-        progressBarBottom.progressProperty().bind(taskBottom.progressProperty());
-        lblBottomCalc.textProperty().bind(taskBottom.messageProperty());
-    }
-
-
     public void updateTasks() {
         taskLeft = kochManager.getTaskLeft();
         taskRight = kochManager.getTaskRight();
         taskBottom = kochManager.getTaskBottom();
     }
+
+    public ProgressBar getProgressBarLeft() {
+        return progressBarLeft;
+    }
+    public ProgressBar getProgressBarRight() {
+        return progressBarRight;
+    }
+    public ProgressBar getProgressBarBottom() {
+        return progressBarBottom;
+    }
+    public Label getLblLeftCalc() {
+        return lblLeftCalc;
+    }
+    public Label getLblRightCalc() {
+        return lblRightCalc;
+    }
+    public Label getLblBottomCalc() {
+        return lblBottomCalc;
+    }
+
 
     /**
      * The main() method is ignored in correctly deployed JavaFX application.

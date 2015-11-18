@@ -21,6 +21,8 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
     private boolean mogelijk = true;
     private KochManager km;
     private ArrayList<Edge> edges;
+    private int maxEdges;
+    private int i = 0;
 
     public MyTask(String side, KochManager k) {
         km = k;
@@ -33,14 +35,16 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
             System.out.println("Verkeerde input");
             mogelijk = false;
         }
-
+        maxEdges = kf.getNrOfEdges() / 3;
         edges = new ArrayList<Edge>();
     }
 
     @Override
     public void update(Observable observable, Object o) {
         edges.add((Edge) o);
+        km.addEdge((Edge) o);
 
+        updateMessage("Edges: " + edges.size());
         //TODO uitbreiden met tekenen
         Edge e = (Edge) o;
         Platform.runLater(new Runnable()
@@ -48,7 +52,10 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
             @Override
             public void run()
             {
-                
+                i++;
+                updateProgress(i, maxEdges);
+                updateMessage(i + "/" + maxEdges);
+                km.drawEdge(e);
             }
         });
     }
@@ -56,6 +63,7 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
     @Override
     protected ArrayList<Edge> call() throws Exception
     {
+        i = 0;
         if (!mogelijk) {
             return null;
         }
