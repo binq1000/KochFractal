@@ -37,6 +37,10 @@ public class KochManager implements Observer {
     private Task taskBottom = null;
     //Pool
     ExecutorService pool = Executors.newFixedThreadPool(3);
+    //Counter
+    private int counter = 0;
+    //Timer
+    TimeStamp tsDraw = new TimeStamp();
     
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
@@ -59,8 +63,15 @@ public class KochManager implements Observer {
         TimeStamp ts = new TimeStamp();
         ts.setBegin();
 
-        application.clearKochPanel();
+
+        if (taskLeft != null && taskRight != null && taskBottom != null) {
+            taskLeft.cancel();
+            taskRight.cancel();
+            taskBottom.cancel();
+        }
+
         createTasks();
+        tsDraw.setBegin();
         startTasks();
 
 
@@ -84,15 +95,13 @@ public class KochManager implements Observer {
     public void drawEdges() {
         application.clearKochPanel();
         
-        
-        TimeStamp ts = new TimeStamp();
-        ts.setBegin();
+
         for (Edge e : edges)
         {
             application.drawEdge(e);
         }
-        ts.setEnd();
-        application.setTextDraw(ts.toString());
+        tsDraw.setEnd();
+        application.setTextDraw(tsDraw.toString());
         
         int nrEdges = kf.getNrOfEdges();
         application.setTextNrEdges(String.valueOf(nrEdges));
@@ -100,11 +109,6 @@ public class KochManager implements Observer {
 
     public void drawEdge(Edge e) {
         application.drawWhiteEdge(e);
-
-        if (taskLeft.isDone() && taskRight.isDone() && taskBottom.isDone()) {
-            System.out.println("We're here!");
-            drawEdges();
-        }
     }
 
     public synchronized void addEdge(Edge e) {
@@ -115,8 +119,13 @@ public class KochManager implements Observer {
         return kf.getLevel();
     }
     
-    public void signalEnd() {
-        application.requestDrawEdges();
+    public synchronized void signalEnd() {
+        counter++;
+        if (counter >= 3) {
+            application.requestDrawEdges();
+            counter = 0;
+        }
+
     }
 
     public void createTasks() {

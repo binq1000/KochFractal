@@ -40,13 +40,6 @@ public class KochFractal extends Observable {
                 drawKochEdge((midabx + bx) / 2, (midaby + by) / 2, bx, by, n - 1);
             }
         }
-
-        try {
-            sleep(1);
-        }
-        catch (Exception e) {
-            //Nothing
-        }
     }
 
     public void generateLeftEdge() {

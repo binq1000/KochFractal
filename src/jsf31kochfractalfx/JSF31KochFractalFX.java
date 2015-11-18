@@ -365,13 +365,6 @@ public class JSF31KochFractalFX extends Application {
                 e.color);
     }
 
-
-    public void updateTasks() {
-        taskLeft = kochManager.getTaskLeft();
-        taskRight = kochManager.getTaskRight();
-        taskBottom = kochManager.getTaskBottom();
-    }
-
     public ProgressBar getProgressBarLeft() {
         return progressBarLeft;
     }
