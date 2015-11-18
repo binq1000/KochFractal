@@ -18,6 +18,7 @@ import java.util.concurrent.Future;
 
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.paint.Color;
 import jsf31kochfractalfx.JSF31KochFractalFX;
 import timeutil.TimeStamp;
 
@@ -34,6 +35,8 @@ public class KochManager implements Observer {
     private Task taskLeft = null;
     private Task taskRight = null;
     private Task taskBottom = null;
+    //Pool
+    ExecutorService pool = Executors.newFixedThreadPool(3);
     
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
@@ -56,26 +59,25 @@ public class KochManager implements Observer {
         TimeStamp ts = new TimeStamp();
         ts.setBegin();
 
-        
-        ArrayList<Edge> ed1 = null;
-        ArrayList<Edge> ed2 = null;
-        ArrayList<Edge> ed3 = null;
+        application.clearKochPanel();
+        createTasks();
+        startTasks();
 
-        if (ed1 !=null && ed2 != null && ed3 != null) {
-            for (Edge e : ed1) {
-                addEdge(e);
-            }
-            for (Edge e : ed2) {
-                addEdge(e);
-            }
-            for (Edge e : ed3) {
-                addEdge(e);
-            }
-        }
 
-        
         ts.setEnd();
         application.setTextCalc(ts.toString());
+
+    }
+
+    public void startTasks() {
+        Thread thLeft = new Thread(taskLeft);
+        Thread thRight = new Thread(taskRight);
+        Thread thBottom = new Thread(taskBottom);
+
+        pool.submit(thLeft);
+        pool.submit(thRight);
+        pool.submit(thBottom);
+
 
     }
 
@@ -96,6 +98,15 @@ public class KochManager implements Observer {
         application.setTextNrEdges(String.valueOf(nrEdges));
     }
 
+    public void drawEdge(Edge e) {
+        application.drawWhiteEdge(e);
+
+        if (taskLeft.isDone() && taskRight.isDone() && taskBottom.isDone()) {
+            System.out.println("We're here!");
+            drawEdges();
+        }
+    }
+
     public synchronized void addEdge(Edge e) {
         edges.add(e);
     }
@@ -109,10 +120,36 @@ public class KochManager implements Observer {
     }
 
     public void createTasks() {
+        if (taskLeft != null) {
+            application.getProgressBarLeft().progressProperty().unbind();
+            application.getLblLeftCalc().textProperty().unbind();
+        }
+        if (taskRight != null) {
+            application.getProgressBarRight().progressProperty().unbind();
+            application.getLblRightCalc().textProperty().unbind();
+        }
+        if (taskBottom != null) {
+            application.getProgressBarBottom().progressProperty().unbind();
+            application.getLblBottomCalc().textProperty().unbind();
+        }
+
         taskLeft = new MyTask("Left", this);
         taskRight = new MyTask("Right", this);
         taskBottom = new MyTask("Bottom", this);
+
+        application.getProgressBarLeft().setProgress(0);
+        application.getProgressBarLeft().progressProperty().bind(taskLeft.progressProperty());
+        application.getLblLeftCalc().textProperty().bind(taskLeft.messageProperty());
+
+        application.getProgressBarRight().setProgress(0);
+        application.getProgressBarRight().progressProperty().bind(taskRight.progressProperty());
+        application.getLblRightCalc().textProperty().bind(taskRight.messageProperty());
+
+        application.getProgressBarBottom().setProgress(0);
+        application.getProgressBarBottom().progressProperty().bind(taskBottom.progressProperty());
+        application.getLblBottomCalc().textProperty().bind(taskBottom.messageProperty());
     }
+
 
     public Task getTaskLeft() {
         return taskLeft;

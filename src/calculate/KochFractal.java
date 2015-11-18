@@ -7,6 +7,8 @@ package calculate;
 import java.util.Observable;
 import javafx.scene.paint.Color;
 
+import static java.lang.Thread.sleep;
+
 /**
  *
  * @author Peter Boots
@@ -37,6 +39,13 @@ public class KochFractal extends Observable {
                 drawKochEdge(cx, cy, (midabx + bx) / 2, (midaby + by) / 2, n - 1);
                 drawKochEdge((midabx + bx) / 2, (midaby + by) / 2, bx, by, n - 1);
             }
+        }
+
+        try {
+            sleep(1);
+        }
+        catch (Exception e) {
+            //Nothing
         }
     }
 
