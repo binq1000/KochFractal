@@ -15,6 +15,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import javafx.concurrent.Task;
+import javafx.scene.control.ProgressBar;
 import jsf31kochfractalfx.JSF31KochFractalFX;
 import timeutil.TimeStamp;
 
@@ -27,8 +30,10 @@ public class KochManager implements Observer {
     private JSF31KochFractalFX application;
     private KochFractal kf;
     final ArrayList<Edge> edges;
-    private int c = 0;
-    private ExecutorService pool;
+    //Tasks
+    private Task taskLeft = null;
+    private Task taskRight = null;
+    private Task taskBottom = null;
     
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
@@ -50,79 +55,30 @@ public class KochManager implements Observer {
         edges.clear();
         TimeStamp ts = new TimeStamp();
         ts.setBegin();
-        
-        CyclicBarrier cb = new CyclicBarrier(3);
-        
-        //Maak een Thread pool van 3 aan
-        
-        pool = Executors.newFixedThreadPool(3);
-        //Maak 3 Callables
-        Callable c1 = new RunClass("Left", this, cb);
-        Callable c2 = new RunClass("Right", this, cb);
-        Callable c3 = new RunClass("Bottom", this, cb);
-        
-        
-//
-//        Thread t1 = new Thread(r1);
-//        Thread t2 = new Thread(r2);
-//        Thread t3 = new Thread(r3);
-//
-//        t1.start();
-//        t2.start();
-//        t3.start();
-//
-//        try {
-//            t1.join();
-//            t2.join();
-//            t3.join();
-//        }
-//        catch (InterruptedException ex) {
-//            System.out.println("Interrupted Exception bij KochManager changeLevel");
-//        }
-        
-        Future<ArrayList<Edge>> fut = pool.submit(c1);
-        Future<ArrayList<Edge>> fut2 = pool.submit(c2);
-        Future<ArrayList<Edge>> fut3 = pool.submit(c3);
+
         
         ArrayList<Edge> ed1 = null;
         ArrayList<Edge> ed2 = null;
         ArrayList<Edge> ed3 = null;
-        
-        try {
-            
-            ed1 = fut.get();
-            ed2 = fut2.get();
-            ed3 = fut3.get();
+
+        if (ed1 !=null && ed2 != null && ed3 != null) {
+            for (Edge e : ed1) {
+                addEdge(e);
+            }
+            for (Edge e : ed2) {
+                addEdge(e);
+            }
+            for (Edge e : ed3) {
+                addEdge(e);
+            }
         }
-        catch (Exception ex) {
-            //Exception handling!
-        }
-        
-        for (Edge e : ed1) {
-            addEdge(e);
-        }
-        for (Edge e : ed2) {
-            addEdge(e);
-        }
-        for (Edge e : ed3) {
-            addEdge(e);
-        }
+
         
         ts.setEnd();
         application.setTextCalc(ts.toString());
-        
-//        if (c == 3) {
-//            c = 0;
-//            application.setTextCalc(ts.toString());
-//            application.requestDrawEdges();
-//        }
+
     }
 
-    
-    
-    
-    
-    
     public void drawEdges() {
         application.clearKochPanel();
         
@@ -144,17 +100,28 @@ public class KochManager implements Observer {
         edges.add(e);
     }
     
-    public synchronized void addCount() {
-        c++;
-    }
-    
     public int getLevel() {
         return kf.getLevel();
     }
     
     public void signalEnd() {
-        pool.shutdown();
         application.requestDrawEdges();
+    }
+
+    public void createTasks() {
+        taskLeft = new MyTask("Left", this);
+        taskRight = new MyTask("Right", this);
+        taskBottom = new MyTask("Bottom", this);
+    }
+
+    public Task getTaskLeft() {
+        return taskLeft;
+    }
+    public Task getTaskRight() {
+        return taskRight;
+    }
+    public Task getTaskBottom() {
+        return taskBottom;
     }
           
 }

@@ -1,5 +1,6 @@
 package calculate;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ import java.util.logging.Logger;
  */
 public class MyTask extends Task<ArrayList<Edge>> implements Observer {
 
-    private String name;
     private static final Logger LOG = Logger.getLogger(MyTask.class.getName());
 
     private KochFractal kf = new KochFractal();
@@ -21,9 +21,8 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
     private boolean mogelijk = true;
     private KochManager km;
     private ArrayList<Edge> edges;
-    private CyclicBarrier cb;
 
-    public MyTask(String side, KochManager k, CyclicBarrier c) {
+    public MyTask(String side, KochManager k) {
         km = k;
         kf.addObserver(this);
         kf.setLevel(km.getLevel());
@@ -34,13 +33,24 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
             System.out.println("Verkeerde input");
             mogelijk = false;
         }
+
         edges = new ArrayList<Edge>();
-        cb = c;
     }
 
     @Override
     public void update(Observable observable, Object o) {
         edges.add((Edge) o);
+
+        //TODO uitbreiden met tekenen
+        Edge e = (Edge) o;
+        Platform.runLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                
+            }
+        });
     }
 
     @Override
@@ -59,11 +69,6 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
         else if(s.matches("Bottom")) {
             kf.generateBottomEdge();
         }
-        //Hier wacht je tot de berekeningen klaar zijn
-        if (cb.await() == 0)
-        {
-            km.signalEnd();
-        }
 
         //Return wat je hebt (deze worden toegevoegd in de update methode.
         return edges;
@@ -76,7 +81,7 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
     @Override
     protected void cancelled() {
         super.cancelled();
-        LOG.info(name + " cancelled()");
+        LOG.info(s + " cancelled()");
     }
 
     /***
@@ -86,7 +91,7 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
     @Override
     protected void failed() {
         super.failed();
-        LOG.info(name + " failed()");
+        LOG.info(s + " failed()");
     }
 
     /**
@@ -96,7 +101,7 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
     @Override
     protected void running() {
         super.running();
-        LOG.info(name + " running()");
+        LOG.info(s + " running()");
     }
 
     /**
@@ -106,7 +111,7 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
     @Override
     protected void scheduled() {
         super.scheduled();
-        LOG.info(name + " scheduled()");
+        LOG.info(s + " scheduled()");
     }
 
     /**
@@ -116,7 +121,7 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
     @Override
     protected void succeeded() {
         super.succeeded();
-        LOG.info(name + " succeeded()");
+        LOG.info(s + " succeeded()");
     }
 
     /***
@@ -125,7 +130,7 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
     @Override
     protected void done() {
         super.done();
-        LOG.info(name + " done()");
+        LOG.info(s + " done()");
     }
 
 }

@@ -52,6 +52,10 @@ public class JSF31KochFractalFX extends Application {
     private Label labelCalcText;
     private Label labelDraw;
     private Label labelDrawText;
+
+    private Label lblLeftCalc;
+    private Label lblRightCalc;
+    private Label lblBottomCalc;
     
     // Koch panel and its size
     private Canvas kochPanel;
@@ -62,6 +66,8 @@ public class JSF31KochFractalFX extends Application {
     private final ProgressBar progressBarLeft = new ProgressBar();
     private final ProgressBar progressBarRight = new ProgressBar();
     private final ProgressBar progressBarBottom = new ProgressBar();
+
+    //Tasks
     private Task taskLeft = null;
     private Task taskRight = null;
     private Task taskBottom = null;
@@ -75,37 +81,37 @@ public class JSF31KochFractalFX extends Application {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        
+
         // For debug purposes
         // Make de grid lines visible
         // grid.setGridLinesVisible(true);
-        
+
         // Drawing panel for Koch fractal
         kochPanel = new Canvas(kpWidth,kpHeight);
         grid.add(kochPanel, 0, 3, 25, 1);
-        
+
         // Labels to present number of edges for Koch fractal
         labelNrEdges = new Label("Nr edges:");
         labelNrEdgesText = new Label();
         grid.add(labelNrEdges, 0, 0, 4, 1);
         grid.add(labelNrEdgesText, 3, 0, 22, 1);
-        
+
         // Labels to present time of calculation for Koch fractal
         labelCalc = new Label("Calculating:");
         labelCalcText = new Label();
         grid.add(labelCalc, 0, 1, 4, 1);
         grid.add(labelCalcText, 3, 1, 22, 1);
-        
+
         // Labels to present time of drawing for Koch fractal
         labelDraw = new Label("Drawing:");
         labelDrawText = new Label();
         grid.add(labelDraw, 0, 2, 4, 1);
         grid.add(labelDrawText, 3, 2, 22, 1);
-        
+
         // Label to present current level of Koch fractal
         labelLevel = new Label("Level: " + currentLevel);
         grid.add(labelLevel, 0, 6);
-        
+
         // Button to increase level of Koch fractal
         Button buttonIncreaseLevel = new Button();
         buttonIncreaseLevel.setText("Increase Level");
@@ -127,7 +133,7 @@ public class JSF31KochFractalFX extends Application {
             }
         });
         grid.add(buttonDecreaseLevel, 5, 6);
-        
+
         // Button to fit Koch fractal in Koch panel
         Button buttonFitFractal = new Button();
         buttonFitFractal.setText("Fit Fractal");
@@ -140,7 +146,7 @@ public class JSF31KochFractalFX extends Application {
             }
         });
         grid.add(buttonFitFractal, 14, 6);
-        
+
         // Add mouse clicked event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
         {
@@ -150,7 +156,7 @@ public class JSF31KochFractalFX extends Application {
                 kochPanelMouseClicked(event);
             }
         });
-        
+
         // Add mouse pressed event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>()
                                   {
@@ -160,7 +166,7 @@ public class JSF31KochFractalFX extends Application {
                                           kochPanelMousePressed(event);
                                       }
                                   });
-        
+
         // Add mouse dragged event to Koch panel
         kochPanel.setOnMouseDragged(new EventHandler<MouseEvent>()
         {
@@ -174,19 +180,19 @@ public class JSF31KochFractalFX extends Application {
 
         //TODO Add ProgressBar to GUI
         Label LeftLabel = new Label("Left Progress");
-        Label lblLeftCalc = new Label(". . . . .");
+        lblLeftCalc = new Label(". . . . .");
         grid.add(lblLeftCalc, 7, 10);
         grid.add(LeftLabel, 3, 10);
         grid.add(progressBarLeft, 5, 10);
 
         Label RightLabel = new Label("Right Progress");
-        Label lblRightCalc = new Label(". . . . .");
+        lblRightCalc = new Label(". . . . .");
         grid.add(lblRightCalc, 7, 11);
         grid.add(RightLabel, 3, 11);
         grid.add(progressBarRight, 5, 11);
 
         Label BottomLabel = new Label("Bottom Progress");
-        Label lblBottomCalc = new Label(". . . . .");
+        lblBottomCalc = new Label(". . . . .");
         grid.add(lblBottomCalc, 7, 12);
         grid.add(BottomLabel, 3, 12);
         grid.add(progressBarBottom, 5, 12);
@@ -197,12 +203,12 @@ public class JSF31KochFractalFX extends Application {
         resetZoom();
         kochManager = new KochManager(this);
         kochManager.changeLevel(currentLevel);
-        
+
         // Create the scene and add the grid pane
         Group root = new Group();
         Scene scene = new Scene(root, kpWidth+50, kpHeight+300);
         root.getChildren().add(grid);
-        
+
         // Define title and assign the scene for main window
         primaryStage.setTitle("Koch Fractal");
         primaryStage.setScene(scene);
@@ -213,7 +219,7 @@ public class JSF31KochFractalFX extends Application {
         GraphicsContext gc = kochPanel.getGraphicsContext2D();
         gc.clearRect(0.0,0.0,kpWidth,kpHeight);
         gc.setFill(Color.BLACK);
-        gc.fillRect(0.0,0.0,kpWidth,kpHeight);
+        gc.fillRect(0.0, 0.0, kpWidth, kpHeight);
     }
     
     public void drawEdge(Edge e) {
@@ -271,6 +277,7 @@ public class JSF31KochFractalFX extends Application {
             labelLevel.setText("Level: " + currentLevel);
             kochManager.changeLevel(currentLevel);
 
+            updateTasks();
             if (taskLeft != null) {
                 taskLeft.cancel();
             }
@@ -281,6 +288,7 @@ public class JSF31KochFractalFX extends Application {
                 taskBottom.cancel();
             }
             createTask();
+            updateTasks();
             new Thread(taskLeft).start();
             new Thread(taskRight).start();
             new Thread(taskBottom).start();
@@ -350,28 +358,41 @@ public class JSF31KochFractalFX extends Application {
 
 
     private void createTask() {
+        updateTasks();
         if (taskLeft != null) {
             progressBarLeft.progressProperty().unbind();
+            lblLeftCalc.textProperty().unbind();
         }
         if (taskRight != null) {
             progressBarRight.progressProperty().unbind();
+            lblRightCalc.textProperty().unbind();
         }
         if (taskBottom != null) {
             progressBarBottom.progressProperty().unbind();
+            lblBottomCalc.textProperty().unbind();
         }
 
-        taskLeft = new MyTask("TaskLeft");
-        taskRight = new MyTask("TaskRight");
-        taskBottom = new MyTask("TaskBottom");
+        kochManager.createTasks();
+        updateTasks();
 
         progressBarLeft.setProgress(0);
         progressBarLeft.progressProperty().bind(taskLeft.progressProperty());
+        lblLeftCalc.textProperty().bind(taskLeft.messageProperty());
 
         progressBarRight.setProgress(0);
         progressBarRight.progressProperty().bind(taskRight.progressProperty());
+        lblRightCalc.textProperty().bind(taskRight.messageProperty());
 
         progressBarBottom.setProgress(0);
         progressBarBottom.progressProperty().bind(taskBottom.progressProperty());
+        lblBottomCalc.textProperty().bind(taskBottom.messageProperty());
+    }
+
+
+    public void updateTasks() {
+        taskLeft = kochManager.getTaskLeft();
+        taskRight = kochManager.getTaskRight();
+        taskBottom = kochManager.getTaskBottom();
     }
 
     /**
