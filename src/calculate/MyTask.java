@@ -2,39 +2,71 @@ package calculate;
 
 import javafx.concurrent.Task;
 
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.concurrent.CyclicBarrier;
 import java.util.logging.Logger;
 
 /**
  * Created by Nekkyou on 18-11-2015.
  */
-public class MyTask extends Task<Void>
-{
+public class MyTask extends Task<ArrayList<Edge>> implements Observer {
+
     private String name;
     private static final Logger LOG = Logger.getLogger(MyTask.class.getName());
 
-    public MyTask(String name) {
-        this.name = name;
+    private KochFractal kf = new KochFractal();
+    private String s = "";
+    private boolean mogelijk = true;
+    private KochManager km;
+    private ArrayList<Edge> edges;
+    private CyclicBarrier cb;
+
+    public MyTask(String side, KochManager k, CyclicBarrier c) {
+        km = k;
+        kf.addObserver(this);
+        kf.setLevel(km.getLevel());
+        if (side.matches("Left") || side.matches("Right") || side.matches("Bottom")) {
+            s = side;
+        }
+        else {
+            System.out.println("Verkeerde input");
+            mogelijk = false;
+        }
+        edges = new ArrayList<Edge>();
+        cb = c;
     }
 
     @Override
-    protected Void call() throws Exception
+    public void update(Observable observable, Object o) {
+        edges.add((Edge) o);
+    }
+
+    @Override
+    protected ArrayList<Edge> call() throws Exception
     {
-        final int MAX = 1000;
-        for (int i = 1; i <= MAX; i++) {
-            if (isCancelled()) {
-                break;
-            }
-            updateProgress(i, MAX);
-            updateMessage(name + " " + String.valueOf(i));
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                if (isCancelled()) {
-                    LOG.info("Exception occurred: " + e.getMessage());
-                }
-            }
+        if (!mogelijk) {
+            return null;
         }
-        return null;
+
+        if(s.matches("Left")) {
+            kf.generateLeftEdge();
+        }
+        else if(s.matches("Right")) {
+            kf.generateRightEdge();
+        }
+        else if(s.matches("Bottom")) {
+            kf.generateBottomEdge();
+        }
+        //Hier wacht je tot de berekeningen klaar zijn
+        if (cb.await() == 0)
+        {
+            km.signalEnd();
+        }
+
+        //Return wat je hebt (deze worden toegevoegd in de update methode.
+        return edges;
     }
 
     /**
