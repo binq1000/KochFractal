@@ -58,11 +58,29 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
                 km.drawEdge(e);
             }
         });
+
+        try {
+            if (s.matches("Left")) {
+                Thread.sleep(1);
+            }
+            else if (s.matches("Right")) {
+                Thread.sleep(2);
+            }
+            else {
+                Thread.sleep(1);
+            }
+        }
+        catch (Exception exc) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Override
     protected ArrayList<Edge> call() throws Exception
     {
+        if (isCancelled()) {
+            return null;
+        }
         i = 0;
         if (!mogelijk) {
             return null;
@@ -78,6 +96,8 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
             kf.generateBottomEdge();
         }
 
+        km.signalEnd();
+
         //Return wat je hebt (deze worden toegevoegd in de update methode.
         return edges;
     }
@@ -89,7 +109,7 @@ public class MyTask extends Task<ArrayList<Edge>> implements Observer {
     @Override
     protected void cancelled() {
         super.cancelled();
-        LOG.info(s + " cancelled()");
+        kf.cancel();
     }
 
     /***

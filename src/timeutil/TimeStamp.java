@@ -143,7 +143,9 @@ public class TimeStamp {
      */
     public String toString() {
         StringBuffer buffer = new StringBuffer();
-
+        if (list.size() > 1) {
+            list.remove(0);
+        }
         for (Period p : this.list) {
             buffer.append(p.toString());
             buffer.append('\n');
