@@ -404,6 +404,10 @@ public class JSF31KochFractalFX extends Application {
         return lblBottomCalc;
     }
 
+    public void setCurrentLevel(int level) {
+        currentLevel = level;
+    }
+
 
     /**
      * The main() method is ignored in correctly deployed JavaFX application.

@@ -46,47 +46,52 @@ public class writingToFileWithLevel implements Observer
 
         //Actual logic
 
-        ExecutorService pool = Executors.newFixedThreadPool(3);
-        pool.execute(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                kf.generateLeftEdge();
-                raiseCounter();
-            }
-        });
+//        ExecutorService pool = Executors.newFixedThreadPool(3);
+//        pool.execute(new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                kf.generateLeftEdge();
+//                raiseCounter();
+//            }
+//        });
+//
+//        pool.execute(new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                kf.generateBottomEdge();
+//                raiseCounter();
+//            }
+//        });
+//
+//        pool.execute(new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                kf.generateRightEdge();
+//                raiseCounter();
+//            }
+//        });
+//
+//        while (counter < 3) {
+//            try
+//            {
+//                Thread.sleep(1);
+//            }
+//            catch (InterruptedException e)
+//            {
+//                System.out.println("Got interrupted!");
+//                e.printStackTrace();
+//            }
+//        }
 
-        pool.execute(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                kf.generateBottomEdge();
-                raiseCounter();
-            }
-        });
-
-        pool.execute(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                kf.generateRightEdge();
-                raiseCounter();
-            }
-        });
-
-        while (counter < 3) {
-            try
-            {
-                Thread.sleep(1);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-        }
+        kf.generateBottomEdge();
+        kf.generateRightEdge();
+        kf.generateLeftEdge();
 
         //Writing of the object
         fos = null;
@@ -105,6 +110,7 @@ public class writingToFileWithLevel implements Observer
         }
         catch (IOException e)
         {
+            System.out.println("Errors");
             e.printStackTrace();
         }
 
@@ -127,6 +133,7 @@ public class writingToFileWithLevel implements Observer
             e.printStackTrace();
         }
 
+        System.out.println(edges.size());
         System.out.println("finished");
 
     }

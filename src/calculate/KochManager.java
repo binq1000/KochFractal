@@ -189,6 +189,8 @@ public class KochManager implements Observer {
 
         try {
             ArrayList<Edge> edgesFromFile = (ArrayList<Edge>)oin.readObject();
+            int edgeNumber = edgesFromFile.size();
+            setCurrentLevel(edgeNumber);
             edges.clear();
             for (Edge e : edgesFromFile) {
                 addEdge(e);
@@ -202,6 +204,45 @@ public class KochManager implements Observer {
             System.out.println("Failed");
         }
 
+    }
+
+    public void setCurrentLevel(int size) {
+        if (size == 3) {
+            application.setCurrentLevel(1);
+        }
+        else if (size == 12) {
+            application.setCurrentLevel(2);
+        }
+        else if (size == 48) {
+            application.setCurrentLevel(3);
+        }
+        else if (size == 192) {
+            application.setCurrentLevel(4);
+        }
+        else if (size == 768) {
+            application.setCurrentLevel(5);
+        }
+        else if (size == 3072) {
+            application.setCurrentLevel(6);
+        }
+        else if (size == 12288) {
+            application.setCurrentLevel(7);
+        }
+        else if (size == 12) {
+            application.setCurrentLevel(8);
+        }
+        else if (size == 12) {
+            application.setCurrentLevel(9);
+        }
+        else if (size == 12) {
+            application.setCurrentLevel(10);
+        }
+        else if (size == 12) {
+            application.setCurrentLevel(11);
+        }
+        else if (size == 12) {
+            application.setCurrentLevel(12);
+        }
     }
           
 }
