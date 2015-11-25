@@ -132,7 +132,13 @@ public class writingToFileWithLevel implements Observer
             TimeStamp tsWrite = new TimeStamp();
             tsWrite.setBegin();
             //out.writeObject(objecten);
-            out.write(String.valueOf(objecten));
+            String sendString = "";
+            sendString += level + System.lineSeparator();
+            sendString += ts.toString() + System.lineSeparator();
+            for (Edge e : edges) {
+                sendString += e.toString() + System.lineSeparator();
+            }
+            out.write(sendString);
             tsWrite.setEnd();
             System.out.println(tsWrite.toString());
         }
