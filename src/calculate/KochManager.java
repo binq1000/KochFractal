@@ -177,8 +177,12 @@ public class KochManager implements Observer {
         return taskBottom;
     }
 
-    public void readFromFile() throws IOException {
-        edges = (ArrayList<Edge>)oin.readObject();
+    public void readFromFile() throws IOException, ClassNotFoundException {
+        ArrayList<Edge> edgesFromFile = (ArrayList<Edge>)oin.readObject();
+        edges.clear();
+        for (Edge e : edgesFromFile) {
+            addEdge(e);
+        }
         oin.close();
         drawEdges();
     }
