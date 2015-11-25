@@ -2,10 +2,7 @@ import calculate.Edge;
 import calculate.KochFractal;
 import timeutil.TimeStamp;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -23,8 +20,10 @@ public class writingToFileWithLevel implements Observer
 
     private final ArrayList<Edge> edges;
     private ArrayList<Object> objecten;
-    private FileOutputStream fos;
-    private ObjectOutputStream out;
+    //private FileOutputStream fos;
+    //private ObjectOutputStream out;
+    private FileWriter fw;
+    private BufferedWriter out;
     private int counter = 0;
 
     public writingToFileWithLevel(int level)
@@ -101,15 +100,21 @@ public class writingToFileWithLevel implements Observer
         objecten.add(ts.toString());
         objecten.add(edges);
 
-        //Writing of the object
-        fos = null;
+        //With Binary
+//        fos = null;
+//        out = null;
+
+        //With Textfile
+        fw = null;
         out = null;
 
 
         try
         {
-            fos = new FileOutputStream("edges.dat");
-            out = new ObjectOutputStream(fos);
+//            fos = new FileOutputStream("edges.dat");
+//            out = new ObjectOutputStream(fos);
+            fw = new FileWriter("edges.txt");
+            out = new BufferedWriter(fw);
         }
         catch (FileNotFoundException e)
         {
@@ -124,7 +129,12 @@ public class writingToFileWithLevel implements Observer
 
         try
         {
-            out.writeObject(objecten);
+            TimeStamp tsWrite = new TimeStamp();
+            tsWrite.setBegin();
+            //out.writeObject(objecten);
+            out.write(String.valueOf(objecten));
+            tsWrite.setEnd();
+            System.out.println(tsWrite.toString());
         }
         catch (IOException e)
         {
