@@ -1,5 +1,6 @@
 import calculate.Edge;
 import calculate.KochFractal;
+import timeutil.TimeStamp;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,6 +22,7 @@ public class writingToFileWithLevel implements Observer
 {
 
     private final ArrayList<Edge> edges;
+    private ArrayList<Object> objecten;
     private FileOutputStream fos;
     private ObjectOutputStream out;
     private int counter = 0;
@@ -33,6 +35,8 @@ public class writingToFileWithLevel implements Observer
             return;
         }
 
+        objecten = new ArrayList<>();
+        objecten.add(level);
         KochFractal kf = new KochFractal();
 
         kf.addObserver(this);
@@ -88,10 +92,14 @@ public class writingToFileWithLevel implements Observer
 //                e.printStackTrace();
 //            }
 //        }
-
+        TimeStamp ts = new TimeStamp();
+        ts.setBegin();
         kf.generateBottomEdge();
         kf.generateRightEdge();
         kf.generateLeftEdge();
+        ts.setEnd();
+        objecten.add(ts.toString());
+        objecten.add(edges);
 
         //Writing of the object
         fos = null;
@@ -116,7 +124,7 @@ public class writingToFileWithLevel implements Observer
 
         try
         {
-            out.writeObject(edges);
+            out.writeObject(objecten);
         }
         catch (IOException e)
         {
