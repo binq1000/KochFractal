@@ -199,13 +199,6 @@ public class KochManager implements Observer {
             application.setCurrentLevel((Integer) objectenInFile.get(0));
             kf.setLevel((Integer) objectenInFile.get(0));
             application.setTextCalc((String) objectenInFile.get(1));
-            ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objectenInFile.get(2);*/
-
-            //Textueel met buffer
-            /*ArrayList<Object> objectenInFile = (ArrayList<Object>) br.read();br.
-            application.setCurrentLevel((Integer) objectenInFile.get(0));
-            kf.setLevel((Integer) objectenInFile.get(0));
-            application.setTextCalc((String) objectenInFile.get(1));
             ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objectenInFile.get(2);
 
             edges.clear();
@@ -216,9 +209,35 @@ public class KochManager implements Observer {
             System.out.println("Got here");
             drawEdges();*/
 
+            //Textueel met buffer
+            int counter = 0;
             String line = "";
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
+                if(counter == 0){
+                    application.setCurrentLevel(Integer.parseInt(line));
+                    kf.setLevel(Integer.parseInt(line));
+                    counter++;
+                }
+                else if (counter == 1){
+                    application.setTextCalc(line);
+                    counter++;
+                }
+                else{
+                    double X1 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                    line = line.substring(line.indexOf(",") + 1, line.length());
+                    double Y1 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                    line = line.substring(line.indexOf(",") + 1, line.length());
+                    double X2 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                    line = line.substring(line.indexOf(",") + 1, line.length());
+                    double Y2 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                    line = line.substring(line.indexOf(",") + 1, line.length());
+                    double red = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                    line = line.substring(line.indexOf(",") + 1, line.length());
+                    double green = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                    line = line.substring(line.indexOf(",") + 1, line.length());
+                    double blue = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                    addEdge(new Edge(X1, Y1, X2, Y2, red, green, blue));
+                }
             }
         }
         catch (Exception e) {
