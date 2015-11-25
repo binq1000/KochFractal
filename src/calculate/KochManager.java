@@ -210,8 +210,11 @@ public class KochManager implements Observer {
             drawEdges();*/
 
             //Textueel met buffer
+            edges.clear();
             int counter = 0;
             String line = "";
+            TimeStamp ts = new TimeStamp();
+            ts.setBegin();
             while ((line = br.readLine()) != null) {
                 if(counter == 0){
                     application.setCurrentLevel(Integer.parseInt(line));
@@ -222,23 +225,32 @@ public class KochManager implements Observer {
                     application.setTextCalc(line);
                     counter++;
                 }
+                else if (counter == 2) {
+                    counter++;
+                }
                 else{
-                    double X1 = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                    line = line.substring(line.indexOf(",") + 1, line.length());
-                    double Y1 = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                    line = line.substring(line.indexOf(",") + 1, line.length());
-                    double X2 = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                    line = line.substring(line.indexOf(",") + 1, line.length());
-                    double Y2 = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                    line = line.substring(line.indexOf(",") + 1, line.length());
-                    double red = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                    line = line.substring(line.indexOf(",") + 1, line.length());
-                    double green = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                    line = line.substring(line.indexOf(",") + 1, line.length());
-                    double blue = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                    addEdge(new Edge(X1, Y1, X2, Y2, red, green, blue));
+                    if (line != "") {
+                        double X1 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                        line = line.substring(line.indexOf(",") + 1, line.length());
+                        double Y1 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                        line = line.substring(line.indexOf(",") + 1, line.length());
+                        double X2 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                        line = line.substring(line.indexOf(",") + 1, line.length());
+                        double Y2 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                        line = line.substring(line.indexOf(",") + 1, line.length());
+                        double red = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                        line = line.substring(line.indexOf(",") + 1, line.length());
+                        double green = Double.parseDouble(line.substring(0, line.indexOf(",")));
+                        line = line.substring(line.indexOf(",") + 1, line.length());
+                        double blue = Double.parseDouble(line);
+                        addEdge(new Edge(X1, Y1, X2, Y2, red, green, blue));
+                    }
                 }
             }
+            ts.setEnd();
+            System.out.println(ts.toString());
+            br.close();
+            drawEdges();
         }
         catch (Exception e) {
             e.printStackTrace();

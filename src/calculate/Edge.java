@@ -26,4 +26,11 @@ public class Edge implements Serializable
         this.green = green;
         this.blue = blue;
     }
+
+    @Override
+    public String toString() {
+        String edgeString = "";
+        edgeString = this.X1 + "," + this.Y1 + "," + this.X2 + "," + this.Y2 + "," + this.red + "," + this.green + "," + this.blue;
+        return edgeString;
+    }
 }
