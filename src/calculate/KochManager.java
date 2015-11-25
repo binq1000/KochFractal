@@ -6,6 +6,7 @@
 package calculate;
 
 import java.io.*;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -40,8 +41,6 @@ public class KochManager implements Observer {
     ExecutorService pool = Executors.newFixedThreadPool(3);
     //Counter
     private int counter = 0;
-    //Timer
-    TimeStamp tsDraw = new TimeStamp();
     //ReadFromFile
     private FileInputStream fis;
     private ObjectInputStream oin;
@@ -76,7 +75,6 @@ public class KochManager implements Observer {
         }
 
         createTasks();
-        tsDraw.setBegin();
         startTasks();
 
 
@@ -99,14 +97,15 @@ public class KochManager implements Observer {
 
     public void drawEdges() {
         application.clearKochPanel();
-        
 
+        TimeStamp ts = new TimeStamp();
+        ts.setBegin();
         for (Edge e : edges)
         {
             application.drawEdge(e);
         }
-        tsDraw.setEnd();
-        application.setTextDraw(tsDraw.toString());
+        ts.setEnd();
+        application.setTextDraw(ts.toString());
         
         int nrEdges = kf.getNrOfEdges();
         application.setTextNrEdges(String.valueOf(nrEdges));
