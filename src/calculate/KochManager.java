@@ -42,8 +42,10 @@ public class KochManager implements Observer {
     //Counter
     private int counter = 0;
     //ReadFromFile
-    private FileInputStream fis;
-    private ObjectInputStream oin;
+    //private FileInputStream fis;
+    //private ObjectInputStream oin;
+    private FileReader fr;
+    private BufferedReader br;
     
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
@@ -177,8 +179,13 @@ public class KochManager implements Observer {
     public void readFromFile() {
         //ReadFromFile
         try {
-            fis = new FileInputStream("edges.dat");
-            oin = new ObjectInputStream(fis);
+            //Binear met buffer
+            /*fis = new FileInputStream("edges.dat");
+            oin = new ObjectInputStream(fis);*/
+            //Tekstueel met buffer
+            fr = new FileReader("edges.txt");
+            br = new BufferedReader(fr);
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -187,7 +194,15 @@ public class KochManager implements Observer {
 
 
         try {
-            ArrayList<Object> objectenInFile = (ArrayList<Object>)oin.readObject();
+            //Binear met buffer
+            /*ArrayList<Object> objectenInFile = (ArrayList<Object>)oin.readObject();
+            application.setCurrentLevel((Integer) objectenInFile.get(0));
+            kf.setLevel((Integer) objectenInFile.get(0));
+            application.setTextCalc((String) objectenInFile.get(1));
+            ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objectenInFile.get(2);*/
+
+            //Textueel met buffer
+            /*ArrayList<Object> objectenInFile = (ArrayList<Object>) br.read();br.
             application.setCurrentLevel((Integer) objectenInFile.get(0));
             kf.setLevel((Integer) objectenInFile.get(0));
             application.setTextCalc((String) objectenInFile.get(1));
@@ -199,7 +214,12 @@ public class KochManager implements Observer {
             }
             oin.close();
             System.out.println("Got here");
-            drawEdges();
+            drawEdges();*/
+
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
