@@ -7,11 +7,14 @@ package calculate;
 
 import javafx.scene.paint.Color;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Peter Boots
  */
-public class Edge {
+public class Edge implements Serializable
+{
     public double X1, Y1, X2, Y2;
     public Color color;
     
