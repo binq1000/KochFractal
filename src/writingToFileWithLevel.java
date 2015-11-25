@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Scanner;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +31,7 @@ public class writingToFileWithLevel implements Observer
 
         edges = new ArrayList<>();
 
-        if (level < 1 && level > 12) {
+        if (level < 1 || level > 12) {
             System.out.println("Invalid level number");
             return;
         }
@@ -88,7 +89,7 @@ public class writingToFileWithLevel implements Observer
 
         try
         {
-            fos = new FileOutputStream("edges");
+            fos = new FileOutputStream("edges.dat");
             out = new ObjectOutputStream(fos);
         }
         catch (FileNotFoundException e)
@@ -134,16 +135,9 @@ public class writingToFileWithLevel implements Observer
 
     public static void main(String[] args) {
         int level = 0;
-        try {
-            level = Integer.parseInt(args[0]);
-        }
-        catch (Exception e) {
-            System.out.println("Not a number between 1 and 12");
-            e.printStackTrace();
-            //Als het fout gaat een dafault waarde gebruiken
-            System.out.println("The default of 5 will be used");
-            level = 5;
-        }
+        System.out.print("Insert level between 1 and 12; Level: ");
+        Scanner in = new Scanner(System.in);
+        level = in.nextInt();
         new writingToFileWithLevel(level);
     }
 
