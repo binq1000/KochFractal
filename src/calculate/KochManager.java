@@ -5,6 +5,7 @@
  */
 package calculate;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -41,13 +42,19 @@ public class KochManager implements Observer {
     private int counter = 0;
     //Timer
     TimeStamp tsDraw = new TimeStamp();
+    //ReadFromFile
+    private FileInputStream fis;
+    private ObjectInputStream oin;
     
-    public KochManager(JSF31KochFractalFX application) {
+    public KochManager(JSF31KochFractalFX application) throws IOException {
         this.application = application;
         //KochFractal en Observer aanmaken
         kf = new KochFractal();
         kf.addObserver(this);
         edges = new ArrayList<Edge>();
+        //ReadFromFile
+        fis = new FileInputStream("edges.dat");
+        oin = new ObjectInputStream(fis);
     }
 
     @Override
@@ -168,6 +175,16 @@ public class KochManager implements Observer {
     }
     public Task getTaskBottom() {
         return taskBottom;
+    }
+
+    public void readFromFile() throws IOException, ClassNotFoundException {
+        ArrayList<Edge> edgesFromFile = (ArrayList<Edge>)oin.readObject();
+        edges.clear();
+        for (Edge e : edgesFromFile) {
+            addEdge(e);
+        }
+        oin.close();
+        drawEdges();
     }
           
 }

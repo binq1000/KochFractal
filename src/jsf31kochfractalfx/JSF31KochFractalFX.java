@@ -147,6 +147,19 @@ public class JSF31KochFractalFX extends Application {
         });
         grid.add(buttonFitFractal, 14, 6);
 
+        // Button to read from file and draw edges
+        Button buttonReadEdges = new Button();
+        buttonReadEdges.setText("Read Edges");
+        buttonReadEdges.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent event)
+            {
+                readEdgesFromFile(event);
+            }
+        });
+        grid.add(buttonReadEdges, 14, 7);
+
         // Add mouse clicked event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
         {
@@ -316,6 +329,10 @@ public class JSF31KochFractalFX extends Application {
     private void fitFractalButtonActionPerformed(ActionEvent event) {
         resetZoom();
         kochManager.drawEdges();
+    }
+
+    private void readEdgesFromFile(ActionEvent event) {
+        kochManager.readFromFile();
     }
     
     private void kochPanelMouseClicked(MouseEvent event) {
