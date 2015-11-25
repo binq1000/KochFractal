@@ -27,17 +27,24 @@ public class writingToFileWithLevel implements Observer
 
     public writingToFileWithLevel(int level)
     {
-        System.out.println("Level: " + level);
-
         edges = new ArrayList<>();
-
         if (level < 1 || level > 12) {
             System.out.println("Invalid level number");
             return;
         }
 
-        //Actual logic
         KochFractal kf = new KochFractal();
+
+        kf.addObserver(this);
+
+        kf.setLevel(level);
+        System.out.println("Level: " + level);
+
+
+
+
+
+        //Actual logic
 
         ExecutorService pool = Executors.newFixedThreadPool(3);
         pool.execute(new Runnable()
@@ -69,7 +76,6 @@ public class writingToFileWithLevel implements Observer
                 raiseCounter();
             }
         });
-
 
         while (counter < 3) {
             try

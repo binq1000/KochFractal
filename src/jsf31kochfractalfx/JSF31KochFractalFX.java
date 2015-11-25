@@ -243,7 +243,8 @@ public class JSF31KochFractalFX extends Application {
         Edge e1 = edgeAfterZoomAndDrag(e);
         
         // Set line color
-        gc.setStroke(e1.color);
+        Color c = Color.hsb(e1.red, e1.green, e1.blue);
+        gc.setStroke(c);
         
         // Set line width depending on level
         if (currentLevel <= 3) {
@@ -379,7 +380,9 @@ public class JSF31KochFractalFX extends Application {
                 e.Y1 * zoom + zoomTranslateY,
                 e.X2 * zoom + zoomTranslateX,
                 e.Y2 * zoom + zoomTranslateY,
-                e.color);
+                e.red,
+                e.green,
+                e.blue);
     }
 
     public ProgressBar getProgressBarLeft() {

@@ -46,15 +46,13 @@ public class KochManager implements Observer {
     private FileInputStream fis;
     private ObjectInputStream oin;
     
-    public KochManager(JSF31KochFractalFX application) throws IOException {
+    public KochManager(JSF31KochFractalFX application) {
         this.application = application;
         //KochFractal en Observer aanmaken
         kf = new KochFractal();
         kf.addObserver(this);
         edges = new ArrayList<Edge>();
-        //ReadFromFile
-        fis = new FileInputStream("edges.dat");
-        oin = new ObjectInputStream(fis);
+
     }
 
     @Override
@@ -177,14 +175,33 @@ public class KochManager implements Observer {
         return taskBottom;
     }
 
-    public void readFromFile() throws IOException, ClassNotFoundException {
-        ArrayList<Edge> edgesFromFile = (ArrayList<Edge>)oin.readObject();
-        edges.clear();
-        for (Edge e : edgesFromFile) {
-            addEdge(e);
+    public void readFromFile() {
+        //ReadFromFile
+        try {
+            fis = new FileInputStream("edges.dat");
+            oin = new ObjectInputStream(fis);
         }
-        oin.close();
-        drawEdges();
+        catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to create input streams");
+        }
+
+
+        try {
+            ArrayList<Edge> edgesFromFile = (ArrayList<Edge>)oin.readObject();
+            edges.clear();
+            for (Edge e : edgesFromFile) {
+                addEdge(e);
+            }
+            oin.close();
+            System.out.println("Got here");
+            drawEdges();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed");
+        }
+
     }
           
 }
