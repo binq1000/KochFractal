@@ -140,7 +140,9 @@ public class writingToFileWithLevel implements Observer
         catch (Exception e) {
             System.out.println("Not a number between 1 and 12");
             e.printStackTrace();
-            return;
+            //Als het fout gaat een dafault waarde gebruiken
+            System.out.println("The default of 5 will be used");
+            level = 5;
         }
         new writingToFileWithLevel(level);
     }
