@@ -406,6 +406,7 @@ public class JSF31KochFractalFX extends Application {
 
     public void setCurrentLevel(int level) {
         currentLevel = level;
+        labelLevel.setText("Level: " + currentLevel);
     }
 
 

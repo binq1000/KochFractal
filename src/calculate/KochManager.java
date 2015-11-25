@@ -207,42 +207,46 @@ public class KochManager implements Observer {
     }
 
     public void setCurrentLevel(int size) {
+        int level = 0;
         if (size == 3) {
-            application.setCurrentLevel(1);
+            level = 1;
         }
         else if (size == 12) {
-            application.setCurrentLevel(2);
+            level = 2;
         }
         else if (size == 48) {
-            application.setCurrentLevel(3);
+            level = 3;
         }
         else if (size == 192) {
-            application.setCurrentLevel(4);
+            level = 4;
         }
         else if (size == 768) {
-            application.setCurrentLevel(5);
+            level = 5;
         }
         else if (size == 3072) {
-            application.setCurrentLevel(6);
+            level = 6;
         }
         else if (size == 12288) {
-            application.setCurrentLevel(7);
+            level = 7;
         }
-        else if (size == 12) {
-            application.setCurrentLevel(8);
+        else if (size == 49152) {
+            level = 8;
         }
-        else if (size == 12) {
-            application.setCurrentLevel(9);
+        else if (size == 196608) {
+            level = 9;
         }
-        else if (size == 12) {
-            application.setCurrentLevel(10);
+        else if (size == 786432) {
+            level = 10;
         }
-        else if (size == 12) {
-            application.setCurrentLevel(11);
+        else if (size == 3145728) {
+            level = 11;
         }
-        else if (size == 12) {
-            application.setCurrentLevel(12);
+        else {
+            level = 12;
         }
+
+        application.setCurrentLevel(level);
+        kf.setLevel(level);
     }
           
 }
