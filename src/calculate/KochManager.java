@@ -42,10 +42,11 @@ public class KochManager implements Observer {
     //Counter
     private int counter = 0;
     //ReadFromFile
-    //private FileInputStream fis;
-    //private ObjectInputStream oin;
-    private FileReader fr;
-    private BufferedReader br;
+    private FileInputStream fis;
+    private BufferedInputStream bis;
+    private ObjectInputStream oin;
+//    private FileReader fr;
+//    private BufferedReader br;
     
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
@@ -180,11 +181,12 @@ public class KochManager implements Observer {
         //ReadFromFile
         try {
             //Binear met buffer
-            /*fis = new FileInputStream("edges.dat");
-            oin = new ObjectInputStream(fis);*/
+            fis = new FileInputStream("edges.dat");
+            bis = new BufferedInputStream(fis);
+            oin = new ObjectInputStream(bis);
             //Tekstueel met buffer
-            fr = new FileReader("edges.txt");
-            br = new BufferedReader(fr);
+//            fr = new FileReader("edges.txt");
+//            br = new BufferedReader(fr);
 
         }
         catch (Exception e) {
@@ -195,7 +197,10 @@ public class KochManager implements Observer {
 
         try {
             //Binear met buffer
-            /*ArrayList<Object> objectenInFile = (ArrayList<Object>)oin.readObject();
+            TimeStamp ts = new TimeStamp();
+            ts.setBegin();
+
+            ArrayList<Object> objectenInFile = (ArrayList<Object>)oin.readObject();
             application.setCurrentLevel((Integer) objectenInFile.get(0));
             kf.setLevel((Integer) objectenInFile.get(0));
             application.setTextCalc((String) objectenInFile.get(1));
@@ -206,100 +211,58 @@ public class KochManager implements Observer {
                 addEdge(e);
             }
             oin.close();
-            System.out.println("Got here");
-            drawEdges();*/
-
-            //Textueel met buffer
-            edges.clear();
-            int counter = 0;
-            String line = "";
-            TimeStamp ts = new TimeStamp();
-            ts.setBegin();
-            while ((line = br.readLine()) != null) {
-                if(counter == 0){
-                    application.setCurrentLevel(Integer.parseInt(line));
-                    kf.setLevel(Integer.parseInt(line));
-                    counter++;
-                }
-                else if (counter == 1){
-                    application.setTextCalc(line);
-                    counter++;
-                }
-                else if (counter == 2) {
-                    counter++;
-                }
-                else{
-                    if (line != "") {
-                        double X1 = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                        line = line.substring(line.indexOf(",") + 1, line.length());
-                        double Y1 = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                        line = line.substring(line.indexOf(",") + 1, line.length());
-                        double X2 = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                        line = line.substring(line.indexOf(",") + 1, line.length());
-                        double Y2 = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                        line = line.substring(line.indexOf(",") + 1, line.length());
-                        double red = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                        line = line.substring(line.indexOf(",") + 1, line.length());
-                        double green = Double.parseDouble(line.substring(0, line.indexOf(",")));
-                        line = line.substring(line.indexOf(",") + 1, line.length());
-                        double blue = Double.parseDouble(line);
-                        addEdge(new Edge(X1, Y1, X2, Y2, red, green, blue));
-                    }
-                }
-            }
             ts.setEnd();
             System.out.println(ts.toString());
-            br.close();
             drawEdges();
+
+            //Textueel met buffer
+//            edges.clear();
+//            int counter = 0;
+//            String line = "";
+//            TimeStamp ts = new TimeStamp();
+//            ts.setBegin();
+//            while ((line = br.readLine()) != null) {
+//                if(counter == 0){
+//                    application.setCurrentLevel(Integer.parseInt(line));
+//                    kf.setLevel(Integer.parseInt(line));
+//                    counter++;
+//                }
+//                else if (counter == 1){
+//                    application.setTextCalc(line);
+//                    counter++;
+//                }
+//                else if (counter == 2) {
+//                    counter++;
+//                }
+//                else{
+//                    if (line != "") {
+//                        double X1 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+//                        line = line.substring(line.indexOf(",") + 1, line.length());
+//                        double Y1 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+//                        line = line.substring(line.indexOf(",") + 1, line.length());
+//                        double X2 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+//                        line = line.substring(line.indexOf(",") + 1, line.length());
+//                        double Y2 = Double.parseDouble(line.substring(0, line.indexOf(",")));
+//                        line = line.substring(line.indexOf(",") + 1, line.length());
+//                        double red = Double.parseDouble(line.substring(0, line.indexOf(",")));
+//                        line = line.substring(line.indexOf(",") + 1, line.length());
+//                        double green = Double.parseDouble(line.substring(0, line.indexOf(",")));
+//                        line = line.substring(line.indexOf(",") + 1, line.length());
+//                        double blue = Double.parseDouble(line);
+//                        addEdge(new Edge(X1, Y1, X2, Y2, red, green, blue));
+//                    }
+//                }
+//            }
+//            ts.setEnd();
+//            System.out.println(ts.toString());
+//            br.close();
+//            drawEdges();
         }
         catch (Exception e) {
             e.printStackTrace();
             System.out.println("Failed");
         }
 
-    }
-
-    public void setCurrentLevel(int size) {
-        int level = 0;
-        if (size == 3) {
-            level = 1;
-        }
-        else if (size == 12) {
-            level = 2;
-        }
-        else if (size == 48) {
-            level = 3;
-        }
-        else if (size == 192) {
-            level = 4;
-        }
-        else if (size == 768) {
-            level = 5;
-        }
-        else if (size == 3072) {
-            level = 6;
-        }
-        else if (size == 12288) {
-            level = 7;
-        }
-        else if (size == 49152) {
-            level = 8;
-        }
-        else if (size == 196608) {
-            level = 9;
-        }
-        else if (size == 786432) {
-            level = 10;
-        }
-        else if (size == 3145728) {
-            level = 11;
-        }
-        else {
-            level = 12;
-        }
-
-        application.setCurrentLevel(level);
-        kf.setLevel(level);
     }
           
 }

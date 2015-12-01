@@ -20,10 +20,13 @@ public class writingToFileWithLevel implements Observer
 
     private final ArrayList<Edge> edges;
     private ArrayList<Object> objecten;
-    //private FileOutputStream fos;
-    //private ObjectOutputStream out;
-    private FileWriter fw;
-    private BufferedWriter out;
+    //Binary
+    private FileOutputStream fos;
+    private ObjectOutputStream out;
+    private BufferedOutputStream bos;
+    //Text
+//    private FileWriter fw;
+//    private BufferedWriter out;
     private int counter = 0;
 
     public writingToFileWithLevel(int level)
@@ -101,20 +104,22 @@ public class writingToFileWithLevel implements Observer
         objecten.add(edges);
 
         //With Binary
-//        fos = null;
-//        out = null;
+        fos = null;
+        out = null;
+        bos = null;
 
         //With Textfile
-        fw = null;
-        out = null;
+//        fw = null;
+//        out = null;
 
 
         try
         {
-//            fos = new FileOutputStream("edges.dat");
-//            out = new ObjectOutputStream(fos);
-            fw = new FileWriter("edges.txt");
-            out = new BufferedWriter(fw);
+            fos = new FileOutputStream("edges.dat");
+            bos = new BufferedOutputStream(fos);
+            out = new ObjectOutputStream(bos);
+//            fw = new FileWriter("edges.txt");
+//            out = new BufferedWriter(fw);
         }
         catch (FileNotFoundException e)
         {
@@ -131,14 +136,14 @@ public class writingToFileWithLevel implements Observer
         {
             TimeStamp tsWrite = new TimeStamp();
             tsWrite.setBegin();
-            //out.writeObject(objecten);
-            String sendString = "";
-            sendString += level + System.lineSeparator();
-            sendString += ts.toString() + System.lineSeparator();
-            for (Edge e : edges) {
-                sendString += e.toString() + System.lineSeparator();
-            }
-            out.write(sendString);
+            out.writeObject(objecten);
+//            String sendString = "";
+//            sendString += level + System.lineSeparator();
+//            sendString += ts.toString() + System.lineSeparator();
+//            for (Edge e : edges) {
+//                sendString += e.toString() + System.lineSeparator();
+//            }
+//            out.write(sendString);
             tsWrite.setEnd();
             System.out.println(tsWrite.toString());
         }
