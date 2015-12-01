@@ -64,8 +64,9 @@ public class KochManager implements Observer {
     }
 
     public void changeLevel(int currentLevel) {
+        application.disableButtons();
         kf.setLevel(currentLevel);
-        
+
         edges.clear();
         TimeStamp ts = new TimeStamp();
         ts.setBegin();
@@ -112,6 +113,8 @@ public class KochManager implements Observer {
         
         int nrEdges = kf.getNrOfEdges();
         application.setTextNrEdges(String.valueOf(nrEdges));
+
+        application.enableButtons();
     }
 
     public void drawEdge(Edge e) {

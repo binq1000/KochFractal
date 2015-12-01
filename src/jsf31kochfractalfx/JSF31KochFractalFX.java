@@ -71,6 +71,10 @@ public class JSF31KochFractalFX extends Application {
     private Task taskLeft = null;
     private Task taskRight = null;
     private Task taskBottom = null;
+
+    //Buttons
+    private Button buttonFitFractal;
+    private Button buttonReadEdges;
     
     @Override
     public void start(Stage primaryStage) {
@@ -135,7 +139,7 @@ public class JSF31KochFractalFX extends Application {
         grid.add(buttonDecreaseLevel, 5, 6);
 
         // Button to fit Koch fractal in Koch panel
-        Button buttonFitFractal = new Button();
+        buttonFitFractal = new Button();
         buttonFitFractal.setText("Fit Fractal");
         buttonFitFractal.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -148,7 +152,7 @@ public class JSF31KochFractalFX extends Application {
         grid.add(buttonFitFractal, 14, 6);
 
         // Button to read from file and draw edges
-        Button buttonReadEdges = new Button();
+        buttonReadEdges = new Button();
         buttonReadEdges.setText("Read Edges");
         buttonReadEdges.setOnAction(new EventHandler<ActionEvent>()
         {
@@ -407,6 +411,16 @@ public class JSF31KochFractalFX extends Application {
     public void setCurrentLevel(int level) {
         currentLevel = level;
         labelLevel.setText("Level: " + currentLevel);
+    }
+
+    public void enableButtons() {
+        buttonFitFractal.setDisable(false);
+        buttonReadEdges.setDisable(false);
+    }
+
+    public void disableButtons() {
+        buttonFitFractal.setDisable(true);
+        buttonReadEdges.setDisable(true);
     }
 
 
