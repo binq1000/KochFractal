@@ -20,16 +20,16 @@ public class writingToFileWithLevel implements Observer
 
     private final ArrayList<Edge> edges;
     private ArrayList<Object> objecten;
+    private KochFractal kf;
     //Binary
     private FileOutputStream fos;
-    private ObjectOutputStream out;
+    private ObjectOutputStream outBin;
     private BufferedOutputStream bos;
     //Text
-//    private FileWriter fw;
-//    private BufferedWriter out;
-    private int counter = 0;
+    private FileWriter fw;
+    private BufferedWriter out;
 
-    public writingToFileWithLevel(int level)
+    public writingToFileWithLevel(int level, int soort)
     {
         edges = new ArrayList<>();
         if (level < 1 || level > 12) {
@@ -39,61 +39,32 @@ public class writingToFileWithLevel implements Observer
 
         objecten = new ArrayList<>();
         objecten.add(level);
-        KochFractal kf = new KochFractal();
+        kf = new KochFractal();
 
         kf.addObserver(this);
 
         kf.setLevel(level);
         System.out.println("Level: " + level);
 
+        if (soort == 1) {
+            bufferedBinary();
+        }
+        else if (soort == 2) {
+            normalBinary();
+        }
+        else if (soort == 3){
+            bufferedText(level);
+        }
 
 
 
+    }
 
-        //Actual logic
+    public synchronized void addEdge(Edge e) {
+        edges.add(e);
+    }
 
-//        ExecutorService pool = Executors.newFixedThreadPool(3);
-//        pool.execute(new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                kf.generateLeftEdge();
-//                raiseCounter();
-//            }
-//        });
-//
-//        pool.execute(new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                kf.generateBottomEdge();
-//                raiseCounter();
-//            }
-//        });
-//
-//        pool.execute(new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                kf.generateRightEdge();
-//                raiseCounter();
-//            }
-//        });
-//
-//        while (counter < 3) {
-//            try
-//            {
-//                Thread.sleep(1);
-//            }
-//            catch (InterruptedException e)
-//            {
-//                System.out.println("Got interrupted!");
-//                e.printStackTrace();
-//            }
-//        }
+    public void bufferedBinary() {
         TimeStamp ts = new TimeStamp();
         ts.setBegin();
         kf.generateBottomEdge();
@@ -105,21 +76,14 @@ public class writingToFileWithLevel implements Observer
 
         //With Binary
         fos = null;
-        out = null;
+        outBin = null;
         bos = null;
-
-        //With Textfile
-//        fw = null;
-//        out = null;
-
 
         try
         {
             fos = new FileOutputStream("edges.dat");
             bos = new BufferedOutputStream(fos);
-            out = new ObjectOutputStream(bos);
-//            fw = new FileWriter("edges.txt");
-//            out = new BufferedWriter(fw);
+            outBin = new ObjectOutputStream(bos);
         }
         catch (FileNotFoundException e)
         {
@@ -136,14 +100,113 @@ public class writingToFileWithLevel implements Observer
         {
             TimeStamp tsWrite = new TimeStamp();
             tsWrite.setBegin();
-            out.writeObject(objecten);
-//            String sendString = "";
-//            sendString += level + System.lineSeparator();
-//            sendString += ts.toString() + System.lineSeparator();
-//            for (Edge e : edges) {
-//                sendString += e.toString() + System.lineSeparator();
-//            }
-//            out.write(sendString);
+            outBin.writeObject(objecten);
+            tsWrite.setEnd();
+            System.out.println(tsWrite.toString());
+            outBin.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("IOException");
+            e.printStackTrace();
+        }
+
+        System.out.println(edges.size());
+        System.out.println("finished");
+    }
+
+    public void normalBinary()
+    {
+        TimeStamp ts = new TimeStamp();
+        ts.setBegin();
+        kf.generateBottomEdge();
+        kf.generateRightEdge();
+        kf.generateLeftEdge();
+        ts.setEnd();
+        objecten.add(ts.toString());
+        objecten.add(edges);
+
+        //With Binary
+        fos = null;
+        outBin = null;
+
+        try
+        {
+            fos = new FileOutputStream("edges.dat");
+            outBin = new ObjectOutputStream(fos);
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.printf("Waarom zou je filenotfound krijgen O.o");
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            System.out.println("Errors");
+            e.printStackTrace();
+        }
+
+        try
+        {
+            TimeStamp tsWrite = new TimeStamp();
+            tsWrite.setBegin();
+            outBin.writeObject(objecten);
+            tsWrite.setEnd();
+            System.out.println(tsWrite.toString());
+            outBin.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("IOException");
+            e.printStackTrace();
+        }
+
+        System.out.println(edges.size());
+        System.out.println("finished");
+    }
+
+    public void bufferedText(int level) {
+        TimeStamp ts = new TimeStamp();
+        ts.setBegin();
+        kf.generateBottomEdge();
+        kf.generateRightEdge();
+        kf.generateLeftEdge();
+        ts.setEnd();
+        objecten.add(ts.toString());
+        objecten.add(edges);
+
+        //With Textfile
+        fw = null;
+        out = null;
+
+
+        try
+        {
+            fw = new FileWriter("edges.txt");
+            out = new BufferedWriter(fw);
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.printf("Waarom zou je filenotfound krijgen O.o");
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            System.out.println("Errors");
+            e.printStackTrace();
+        }
+
+        try
+        {
+            TimeStamp tsWrite = new TimeStamp();
+            tsWrite.setBegin();
+            String sendString = "";
+            sendString += level + System.lineSeparator();
+            sendString += ts.toString() + System.lineSeparator();
+            for (Edge e : edges) {
+                sendString += e.toString() + System.lineSeparator();
+            }
+            out.write(sendString);
             tsWrite.setEnd();
             System.out.println(tsWrite.toString());
         }
@@ -164,23 +227,13 @@ public class writingToFileWithLevel implements Observer
 
         System.out.println(edges.size());
         System.out.println("finished");
-
     }
-
-    public synchronized void addEdge(Edge e) {
-        edges.add(e);
-    }
-
-    public synchronized void raiseCounter() {
-        counter++;
-    }
-
     public static void main(String[] args) {
         int level = 0;
         System.out.print("Insert level between 1 and 12; Level: ");
         Scanner in = new Scanner(System.in);
         level = in.nextInt();
-        new writingToFileWithLevel(level);
+        new writingToFileWithLevel(level, 1);
     }
 
     @Override
