@@ -3,6 +3,8 @@ import calculate.KochFractal;
 import timeutil.TimeStamp;
 
 import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -54,6 +56,12 @@ public class writingToFileWithLevel implements Observer
         }
         else if (soort == 3){
             bufferedText(level);
+        }
+        else if (soort == 4) {
+            memoryMapped(level);
+        }
+        else if (soort == 5) {
+            memMappedZonderSendString();
         }
 
 
@@ -228,12 +236,158 @@ public class writingToFileWithLevel implements Observer
         System.out.println(edges.size());
         System.out.println("finished");
     }
+
+
+    public void memoryMapped(int level) {
+        TimeStamp ts = new TimeStamp();
+        ts.setBegin();
+        kf.generateBottomEdge();
+        kf.generateRightEdge();
+        kf.generateLeftEdge();
+        ts.setEnd();
+        objecten.add(ts.toString());
+        objecten.add(edges);
+
+        String sendString = "";
+        sendString += level + System.lineSeparator();
+        sendString += ts.toString() + System.lineSeparator();
+        for (Edge e : edges) {
+            sendString += e.toString() + System.lineSeparator();
+        }
+
+        int nLevelByte = 4;
+        int nEdgeByte = 7 * 8;
+        int nTotalBytes = nLevelByte + (edges.size() * nEdgeByte);
+
+        RandomAccessFile memoryMappedFile = null;
+        try
+        {
+            memoryMappedFile = new RandomAccessFile("data.txt", "rw");
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
+        //Mapping a file into memory
+        FileChannel      fc = memoryMappedFile.getChannel();
+        MappedByteBuffer out = null;
+        try
+        {
+            out = fc.map(FileChannel.MapMode.READ_WRITE, 0, sendString.getBytes().length);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        //Writing into Memory Mapped File
+        TimeStamp tsWrite = new TimeStamp();
+        tsWrite.setBegin();
+
+        System.out.println(sendString.getBytes().length);
+        out.put(sendString.getBytes());
+        tsWrite.setEnd();
+        System.out.println(tsWrite.toString());
+
+        System.out.println("Writing to Memory Mapped File is completed");
+    }
+
+    public void memMappedZonderSendString() {
+        TimeStamp ts = new TimeStamp();
+        ts.setBegin();
+        kf.generateBottomEdge();
+        kf.generateRightEdge();
+        kf.generateLeftEdge();
+        ts.setEnd();
+        objecten.add(ts.toString());
+        objecten.add(edges);
+
+//        int nLevelByte = 4;         //The level is 4 bytes
+//        int nEdgeByte = 7 * 8;      //X1, Y1, X2, Y2, red, green, red (all doubles)
+//        int nTotalBytes = nLevelByte + (edges.size() * nEdgeByte);
+//        System.out.println("Total bytes" + nTotalBytes);
+
+        ByteArrayOutputStream baos = null;
+
+        try
+        {
+            baos = new ByteArrayOutputStream();
+            outBin = new ObjectOutputStream(baos);
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.printf("Waarom zou je filenotfound krijgen O.o");
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            System.out.println("Errors");
+            e.printStackTrace();
+        }
+        byte[] bytes = null;
+
+        try
+        {
+            outBin.writeObject(objecten);
+            bytes = baos.toByteArray();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+
+        RandomAccessFile memoryMappedFile = null;
+        try
+        {
+            memoryMappedFile = new RandomAccessFile("data.txt", "rw");
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
+        //Mapping a file into memory
+        FileChannel      fc = memoryMappedFile.getChannel();
+        MappedByteBuffer out = null;
+        try
+        {
+            out = fc.map(FileChannel.MapMode.READ_WRITE, 0, bytes.length);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        //Writing into Memory Mapped File
+        TimeStamp tsWrite = new TimeStamp();
+        tsWrite.setBegin();
+
+        out.put(bytes);
+
+        tsWrite.setEnd();
+        System.out.println(tsWrite.toString());
+
+        System.out.println("Writing to Memory Mapped File is completed");
+    }
+
     public static void main(String[] args) {
         int level = 0;
-        System.out.print("Insert level between 1 and 12; Level: ");
+        int soort = 0;
+        System.out.println("Insert een soort: ");
+        System.out.println("1. Buffered Binary");
+        System.out.println("2. Normal Binary");
+        System.out.println("3. Buffered Text");
+        System.out.println("4. Memory mapped");
+        System.out.println("5. Memory Mapped zonder sendstring");
         Scanner in = new Scanner(System.in);
-        level = in.nextInt();
-        new writingToFileWithLevel(level, 1);
+        soort = in.nextInt();
+
+        System.out.print("Insert level between 1 and 12; Level: ");
+        Scanner inLevel = new Scanner(System.in);
+        level = inLevel.nextInt();
+        new writingToFileWithLevel(level, soort);
     }
 
     @Override
