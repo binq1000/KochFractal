@@ -6,6 +6,8 @@
 package calculate;
 
 import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -266,6 +268,20 @@ public class KochManager implements Observer {
             System.out.println("Failed");
         }
 
+    }
+
+    public void readFromFileMap() throws IOException {
+        RandomAccessFile memoryMappedFile = new RandomAccessFile("data.txt", "r");
+
+        //Mapping a file into memory
+        FileChannel fc = memoryMappedFile.getChannel();
+        MappedByteBuffer out = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+
+        //reading 10 bytes from memory file in Java
+        for (int i = 0; i < fc.size(); i++) {
+            System.out.print((char) out.get(i));
+        }
+        System.out.println("\nReading from Memory Mapped File is completed");
     }
           
 }
