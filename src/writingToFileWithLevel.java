@@ -300,7 +300,7 @@ public class writingToFileWithLevel implements Observer
         kf.generateRightEdge();
         kf.generateLeftEdge();
         ts.setEnd();
-        objecten.add(ts.toString());
+        //objecten.add(ts.toString());
         objecten.add(edges);
 
 //        int nLevelByte = 4;         //The level is 4 bytes
