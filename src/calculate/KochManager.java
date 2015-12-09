@@ -6,6 +6,8 @@
 package calculate;
 
 import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -265,6 +267,88 @@ public class KochManager implements Observer {
             e.printStackTrace();
             System.out.println("Failed");
         }
+
+    }
+
+    public void readFromFileMap() throws IOException {
+        /*RandomAccessFile memoryMappedFile = new RandomAccessFile("data.txt", "r");
+
+        //Mapping a file into memory
+        FileChannel fc = memoryMappedFile.getChannel();
+        MappedByteBuffer out = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+
+        //reading 10 bytes from memory file in Java
+        for (int i = 0; i < fc.size(); i++) {
+            System.out.print((char) out.get(i));
+        }
+        System.out.println("\nReading from Memory Mapped File is completed");*/
+
+
+        /*char[] cbuf = new char[edges.size() + 3];
+        FileReader fstream = new FileReader("edges.dat");
+
+        BufferedReader bf;
+        bf = new BufferedReader(fstream);
+
+        while(bf.readLine() != null){
+            bf.read(cbuf,0,10);
+        }*/
+
+        DataInputStream input = new DataInputStream(new FileInputStream("edges.dat"));
+
+        //int x1;
+        /*int y1;
+        int x2;
+        int y2;
+        int red;
+        int green;
+        int blue;*/
+        boolean stopLoop = true;
+        int firstVar = 555;
+        while (stopLoop) {
+            //First coordinate
+            if(firstVar == 555){
+                firstVar = input.readInt();
+                System.out.println(firstVar);
+            }
+            else{
+                int X = input.readInt();
+                System.out.println(X);
+                if(firstVar == X){
+                    stopLoop = false;
+                }
+            }
+            //int x1 = input.readInt();
+            /*y1 = input.readInt();
+            x2 = input.readInt();
+            y2 = input.readInt();
+            red = input.readInt();
+            green = input.readInt();
+            blue = input.readInt();
+            addEdge(new Edge(x1, y1, x2, y2, red, green, blue));*/
+            //System.out.println(x1);
+        }
+
+        input.close();
+
+        /*//Create file object
+        File file = new File("edges.dat");
+
+        //Get file channel in readonly mode
+        FileChannel fileChannel = new RandomAccessFile(file, "r").getChannel();
+
+        //Get direct byte buffer access using channel.map() operation
+        MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
+
+        // the buffer now reads the file as if it were loaded in memory.
+        System.out.println(buffer.isLoaded());  //prints false
+        System.out.println(buffer.capacity());  //Get the size based on content size of file
+
+        //You can read the file from this buffer the way you like.
+        for (int i = 0; i < buffer.limit(); i++)
+        {
+            System.out.print((char) buffer.get()); //Print the content of file
+        }*/
 
     }
           

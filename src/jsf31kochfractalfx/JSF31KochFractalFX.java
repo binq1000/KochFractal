@@ -22,6 +22,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 /**
  *
  * @author Nico Kuijpers
@@ -75,6 +77,7 @@ public class JSF31KochFractalFX extends Application {
     //Buttons
     private Button buttonFitFractal;
     private Button buttonReadEdges;
+    private Button buttonReadEdgesMap;
     
     @Override
     public void start(Stage primaryStage) {
@@ -163,6 +166,23 @@ public class JSF31KochFractalFX extends Application {
             }
         });
         grid.add(buttonReadEdges, 14, 7);
+
+        // Button to read from fileMap and draw edges
+        buttonReadEdgesMap = new Button();
+        buttonReadEdgesMap.setText("Read Edges Map");
+        buttonReadEdgesMap.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent event)
+            {
+                try {
+                    readEdgesFromFileMap(event);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        grid.add(buttonReadEdgesMap, 14, 8);
 
         // Add mouse clicked event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
@@ -338,6 +358,10 @@ public class JSF31KochFractalFX extends Application {
 
     private void readEdgesFromFile(ActionEvent event) {
         kochManager.readFromFile();
+    }
+
+    private void readEdgesFromFileMap(ActionEvent event) throws IOException {
+        kochManager.readFromFileMap();
     }
     
     private void kochPanelMouseClicked(MouseEvent event) {
