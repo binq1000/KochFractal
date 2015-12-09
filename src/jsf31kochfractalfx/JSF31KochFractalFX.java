@@ -315,7 +315,15 @@ public class JSF31KochFractalFX extends Application {
     }
     
     public void setTextCalc(String text) {
-        labelCalcText.setText(text);
+        Platform.runLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                labelCalcText.setText(text);
+            }
+        });
+        //labelCalcText.setText(text);
     }
     
     public void setTextDraw(String text) {
@@ -332,6 +340,7 @@ public class JSF31KochFractalFX extends Application {
             }
         });
     }
+
     
     private void increaseLevelButtonActionPerformed(ActionEvent event) {
         if (currentLevel < 12) {

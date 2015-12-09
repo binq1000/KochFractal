@@ -1,10 +1,13 @@
 import calculate.Edge;
 import calculate.KochFractal;
+import calculate.WatchDirMain;
 import timeutil.TimeStamp;
 
 import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -33,6 +36,7 @@ public class writingToFileWithLevel implements Observer
 
     public writingToFileWithLevel(int level, int soort)
     {
+
         edges = new ArrayList<>();
         if (level < 1 || level > 12) {
             System.out.println("Invalid level number");
@@ -89,7 +93,7 @@ public class writingToFileWithLevel implements Observer
 
         try
         {
-            fos = new FileOutputStream("edges.dat");
+            fos = new FileOutputStream("D:\\edges2.dat");
             bos = new BufferedOutputStream(fos);
             outBin = new ObjectOutputStream(bos);
         }
@@ -120,6 +124,33 @@ public class writingToFileWithLevel implements Observer
         }
 
         System.out.println(edges.size());
+
+        //Renaming file:
+        try
+        {
+            Files.delete(Paths.get("D:\\edges.dat"));
+        }
+        catch (IOException e)
+        {
+            System.out.println("Deleting failed");
+            e.printStackTrace();
+        }
+
+        // File (or directory) with old name
+        File file = new File("D:\\edges2.dat");
+
+        // File (or directory) with new name
+        File file2 = new File("D:\\edges.dat");
+
+        // Rename file (or directory)
+        boolean success = file.renameTo(file2);
+
+        if (!success) {
+            // File was not successfully renamed
+            System.out.println("Renamed failed");
+        }
+
+
         System.out.println("finished");
     }
 
@@ -190,7 +221,7 @@ public class writingToFileWithLevel implements Observer
 
         try
         {
-            fw = new FileWriter("edges.txt");
+            fw = new FileWriter("D:\\edges.txt");
             out = new BufferedWriter(fw);
         }
         catch (FileNotFoundException e)
@@ -262,7 +293,7 @@ public class writingToFileWithLevel implements Observer
         RandomAccessFile memoryMappedFile = null;
         try
         {
-            memoryMappedFile = new RandomAccessFile("data.txt", "rw");
+            memoryMappedFile = new RandomAccessFile("D:\\data.txt", "rw");
         }
         catch (FileNotFoundException e)
         {
@@ -341,7 +372,7 @@ public class writingToFileWithLevel implements Observer
         RandomAccessFile memoryMappedFile = null;
         try
         {
-            memoryMappedFile = new RandomAccessFile("data.txt", "rw");
+            memoryMappedFile = new RandomAccessFile("D:\\data.txt", "rw");
         }
         catch (FileNotFoundException e)
         {

@@ -49,8 +49,11 @@ public class KochManager implements Observer {
     private ObjectInputStream oin;
 //    private FileReader fr;
 //    private BufferedReader br;
+    private WatchDirMain wdm;
     
     public KochManager(JSF31KochFractalFX application) {
+        wdm = new WatchDirMain("D:\\", false, this);
+
         this.application = application;
         //KochFractal en Observer aanmaken
         kf = new KochFractal();
@@ -186,7 +189,7 @@ public class KochManager implements Observer {
         //ReadFromFile
         try {
             //Binear met buffer
-            fis = new FileInputStream("edges.dat");
+            fis = new FileInputStream("D:\\edges.dat");
             bis = new BufferedInputStream(fis);
             oin = new ObjectInputStream(bis);
             //Tekstueel met buffer
@@ -309,6 +312,18 @@ public class KochManager implements Observer {
         drawEdges();
         System.out.println("\nReading from Memory Mapped File is completed");
 
+    }
+
+    public synchronized void entry_created() {
+        readFromFile();
+    }
+
+    public synchronized void entry_deleted() {
+        return;
+    }
+
+    public synchronized void entry_modified() {
+        return;
     }
           
 }
