@@ -271,6 +271,9 @@ public class KochManager implements Observer {
     }
 
     public void readFromFileMap() throws IOException {
+        TimeStamp ts = new TimeStamp();
+        ts.setBegin();
+
         RandomAccessFile memoryMappedFile = new RandomAccessFile("data.txt", "r");
 
         //Mapping a file into memory
@@ -300,6 +303,9 @@ public class KochManager implements Observer {
         for (Edge e : edgesFromFile){
             addEdge(e);
         }
+        ts.setEnd();
+        System.out.println(ts.toString());
+
         drawEdges();
         System.out.println("\nReading from Memory Mapped File is completed");
 
