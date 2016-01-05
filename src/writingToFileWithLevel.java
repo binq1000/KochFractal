@@ -325,6 +325,7 @@ public class writingToFileWithLevel implements Observer
     }
 
     public void memMappedZonderSendString() {
+        //Test stuff
         TimeStamp ts = new TimeStamp();
         ts.setBegin();
         kf.generateBottomEdge();
