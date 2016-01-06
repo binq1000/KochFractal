@@ -20,7 +20,7 @@ public class MultiServer
         }
 
         while (listening) {
-            Thread t = new Thread();
+            Thread t = new Thread(new serverRunnable(serverSocket.accept()));
             t.start();
         }
 
