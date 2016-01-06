@@ -29,6 +29,7 @@ public class writingToFileWithLevel implements Observer
     private ArrayList<Object> objecten;
     private KochFractal kf;
     private int soort = 0;
+    private int level = 0;
     //Binary
     private FileOutputStream fos;
     private ObjectOutputStream outBin;
@@ -43,6 +44,7 @@ public class writingToFileWithLevel implements Observer
 
     public writingToFileWithLevel(int level, int soort)
     {
+        this.level = level;
         this.soort = soort;
         edges = new ArrayList<>();
         if (level < 1 || level > 12) {
@@ -55,6 +57,7 @@ public class writingToFileWithLevel implements Observer
         kf = new KochFractal();
 
         kf.addObserver(this);
+
 
         kf.setLevel(level);
         System.out.println("Level: " + level);
@@ -438,7 +441,10 @@ public class writingToFileWithLevel implements Observer
     public synchronized void writeSingleEdge() {
         createBaosAndOutBin();
 
+        objecten.clear();
+        objecten.add(level);
         objecten.add(edges.size());
+        objecten.add(edges);
 
         byte[] bytes = null;
 

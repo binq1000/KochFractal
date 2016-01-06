@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -331,19 +332,26 @@ public class KochManager implements Observer {
     public void readFromFileMapWithLocking() {
         while (true){
             try {
-                RandomAccessFile memoryMappedFile = new RandomAccessFile("readThis.txt", "r");
+                RandomAccessFile memoryMappedFile = new RandomAccessFile("D:\\readThis.txt", "rw");
+
+                System.out.println("File found");
 
                 //Mapping a file into memory
                 FileChannel fc = memoryMappedFile.getChannel();
                 FileLock lock = null;
                 do {
-                    lock = fc.tryLock();
-
                     try {
-                        Thread.currentThread().sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        lock = fc.tryLock();
                     }
+                    catch (OverlappingFileLockException olfe) {
+                        System.out.println("OverLappingLockException");
+                        try {
+                            Thread.currentThread().sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
                 while(lock == null);
 
@@ -371,8 +379,8 @@ public class KochManager implements Observer {
                 application.setCurrentLevel((Integer) objecten.get(0));
                 kf.setLevel((Integer) objecten.get(0));
                 //application.setTextCalc((String) objecten.get(1));
-                totalEdgesInFile = (Integer) objecten.get(objecten.size() - 1);
-                ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objecten.get(1);
+                totalEdgesInFile = (Integer) objecten.get(1);
+                ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objecten.get(2);
 
                 if (totalEdgesRead < totalEdgesInFile){
 
@@ -387,10 +395,10 @@ public class KochManager implements Observer {
                     totalEdgesRead = totalEdgesInFile;
                 }
 
-                drawEdges();
+                application.requestDrawEdges();
                 System.out.println("\nReading from Memory Mapped File is completed");
             } catch (FileNotFoundException fnfe){
-                fnfe.printStackTrace();
+                //fnfe.printStackTrace();
             } catch (IOException e){
                 e.printStackTrace();
             }
