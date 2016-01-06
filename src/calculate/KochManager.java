@@ -329,69 +329,71 @@ public class KochManager implements Observer {
     }
 
     public void readFromFileMapWithLocking() {
-        try {
-            RandomAccessFile memoryMappedFile = new RandomAccessFile("readThis.txt", "r");
+        while (true){
+            try {
+                RandomAccessFile memoryMappedFile = new RandomAccessFile("readThis.txt", "r");
 
-            //Mapping a file into memory
-            FileChannel fc = memoryMappedFile.getChannel();
-            FileLock lock = null;
-            do {
-                lock = fc.tryLock();
+                //Mapping a file into memory
+                FileChannel fc = memoryMappedFile.getChannel();
+                FileLock lock = null;
+                do {
+                    lock = fc.tryLock();
 
+                    try {
+                        Thread.currentThread().sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                while(lock == null);
+
+                MappedByteBuffer out = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+
+                byte[] bytes = new byte[(int) fc.size()];
+
+                //reading from memory file in Java
+                out.get(bytes);
+                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                ObjectInputStream ois = new ObjectInputStream(bais);
+
+                ArrayList<Object> objecten = null;
                 try {
-                    Thread.currentThread().sleep(1);
-                } catch (InterruptedException e) {
+                    objecten = (ArrayList<Object>) ois.readObject();
+                } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-            }
-            while(lock == null);
 
-            MappedByteBuffer out = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-
-            byte[] bytes = new byte[(int) fc.size()];
-
-            //reading from memory file in Java
-            out.get(bytes);
-            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-            ObjectInputStream ois = new ObjectInputStream(bais);
-
-            ArrayList<Object> objecten = null;
-            try {
-                objecten = (ArrayList<Object>) ois.readObject();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            if(lock != null){
-                lock.release();
-            }
-
-
-            application.setCurrentLevel((Integer) objecten.get(0));
-            kf.setLevel((Integer) objecten.get(0));
-            //application.setTextCalc((String) objecten.get(1));
-            totalEdgesInFile = (Integer) objecten.get(1);
-            ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objecten.get(2);
-
-            if (totalEdgesRead < totalEdgesInFile){
-
-                int counter = 0;
-                for (Edge e : edgesFromFile){
-                    if(counter >= totalEdgesRead){
-                        addEdge(e);
-                    }
-                    counter++;
+                if(lock != null){
+                    lock.release();
                 }
 
-                totalEdgesRead = totalEdgesInFile;
-            }
 
-            drawEdges();
-            System.out.println("\nReading from Memory Mapped File is completed");
-        } catch (FileNotFoundException fnfe){
-            fnfe.printStackTrace();
-        } catch (IOException e){
-            e.printStackTrace();
+                application.setCurrentLevel((Integer) objecten.get(0));
+                kf.setLevel((Integer) objecten.get(0));
+                //application.setTextCalc((String) objecten.get(1));
+                totalEdgesInFile = (Integer) objecten.get(1);
+                ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objecten.get(2);
+
+                if (totalEdgesRead < totalEdgesInFile){
+
+                    int counter = 0;
+                    for (Edge e : edgesFromFile){
+                        if(counter >= totalEdgesRead){
+                            addEdge(e);
+                        }
+                        counter++;
+                    }
+
+                    totalEdgesRead = totalEdgesInFile;
+                }
+
+                drawEdges();
+                System.out.println("\nReading from Memory Mapped File is completed");
+            } catch (FileNotFoundException fnfe){
+                fnfe.printStackTrace();
+            } catch (IOException e){
+                e.printStackTrace();
+            }
         }
 
     }
