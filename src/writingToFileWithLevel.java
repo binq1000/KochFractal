@@ -6,6 +6,8 @@ import timeutil.TimeStamp;
 import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class writingToFileWithLevel implements Observer
     private final ArrayList<Edge> edges;
     private ArrayList<Object> objecten;
     private KochFractal kf;
+    private int soort = 0;
     //Binary
     private FileOutputStream fos;
     private ObjectOutputStream outBin;
@@ -33,10 +36,14 @@ public class writingToFileWithLevel implements Observer
     //Text
     private FileWriter fw;
     private BufferedWriter out;
+    //MemoryMapped
+    private ByteArrayOutputStream baos;
+    //FileLocking
+    FileLock lock = null;
 
     public writingToFileWithLevel(int level, int soort)
     {
-
+        this.soort = soort;
         edges = new ArrayList<>();
         if (level < 1 || level > 12) {
             System.out.println("Invalid level number");
@@ -67,6 +74,9 @@ public class writingToFileWithLevel implements Observer
         else if (soort == 5) {
             memMappedZonderSendString();
         }
+        else if (soort == 6) {
+            writeAndRead();
+        }
 
 
 
@@ -74,6 +84,9 @@ public class writingToFileWithLevel implements Observer
 
     public synchronized void addEdge(Edge e) {
         edges.add(e);
+        if (soort == 6) {
+            writeSingleEdge();
+        }
     }
 
     public void bufferedBinary() {
@@ -340,23 +353,8 @@ public class writingToFileWithLevel implements Observer
 //        int nTotalBytes = nLevelByte + (edges.size() * nEdgeByte);
 //        System.out.println("Total bytes" + nTotalBytes);
 
-        ByteArrayOutputStream baos = null;
+        createBaosAndOutBin();
 
-        try
-        {
-            baos = new ByteArrayOutputStream();
-            outBin = new ObjectOutputStream(baos);
-        }
-        catch (FileNotFoundException e)
-        {
-            System.out.printf("Waarom zou je filenotfound krijgen O.o");
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            System.out.println("Errors");
-            e.printStackTrace();
-        }
         byte[] bytes = null;
 
         try
@@ -404,6 +402,138 @@ public class writingToFileWithLevel implements Observer
         System.out.println("Writing to Memory Mapped File is completed");
     }
 
+
+
+    //Write and read at the same time
+    public void writeAndRead() {
+        TimeStamp ts = new TimeStamp();
+        ts.setBegin();
+        kf.generateBottomEdge();
+        kf.generateRightEdge();
+        kf.generateLeftEdge();
+        ts.setEnd();
+//        objecten.add(ts.toString());
+
+        System.out.println("Done with writing the files");
+    }
+
+    private void createBaosAndOutBin() {
+        try
+        {
+            baos = new ByteArrayOutputStream();
+            outBin = new ObjectOutputStream(baos);
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.printf("Waarom zou je filenotfound krijgen O.o");
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            System.out.println("Errors");
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void writeSingleEdge() {
+        createBaosAndOutBin();
+
+        objecten.add(edges.size());
+
+        byte[] bytes = null;
+
+        try
+        {
+            outBin.writeObject(objecten);
+            bytes = baos.toByteArray();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+
+        RandomAccessFile memoryMappedFile = null;
+        try
+        {
+            memoryMappedFile = new RandomAccessFile("D:\\readThis.txt", "rw");
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
+        //Mapping a file into memory
+        FileChannel      fc = memoryMappedFile.getChannel();
+
+        do
+        {
+            try
+            {
+                lock = fc.tryLock();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            catch (OverlappingFileLockException olfle)
+            {
+                System.out.println("File already locked");
+                olfle.printStackTrace();
+            }
+            try
+            {
+                Thread.currentThread().sleep(1);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        while (lock == null);
+
+
+        MappedByteBuffer out = null;
+        try
+        {
+            out = fc.map(FileChannel.MapMode.READ_WRITE, 0, bytes.length);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        //Writing into Memory Mapped File
+        TimeStamp tsWrite = new TimeStamp();
+        tsWrite.setBegin();
+
+        out.put(bytes);
+
+        tsWrite.setEnd();
+        System.out.println(tsWrite.toString());
+
+        if (lock != null) {
+            try
+            {
+                lock.release();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+
+        try
+        {
+            fc.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         int level = 0;
         int soort = 0;
@@ -413,6 +543,7 @@ public class writingToFileWithLevel implements Observer
         System.out.println("3. Buffered Text");
         System.out.println("4. Memory mapped");
         System.out.println("5. Memory Mapped zonder sendstring");
+        System.out.println("6. WriteAndRead");
         Scanner in = new Scanner(System.in);
         soort = in.nextInt();
 
@@ -425,6 +556,7 @@ public class writingToFileWithLevel implements Observer
     @Override
     public void update(Observable observable, Object o)
     {
+
         addEdge((Edge)o);
     }
 }
