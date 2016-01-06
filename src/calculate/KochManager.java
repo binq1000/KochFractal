@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.paint.Color;
@@ -54,6 +55,7 @@ public class KochManager implements Observer {
     private WatchDirMain wdm;
     private int totalEdgesRead = 0;
     private int totalEdgesInFile = 0;
+    private boolean isDoneReading = false;
     
     public KochManager(JSF31KochFractalFX application) {
         wdm = new WatchDirMain("D:\\", false, this);
@@ -381,6 +383,7 @@ public class KochManager implements Observer {
                 //application.setTextCalc((String) objecten.get(1));
                 totalEdgesInFile = (Integer) objecten.get(1);
                 ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objecten.get(2);
+                isDoneReading = (Boolean) objecten.get(3);
 
                 if (totalEdgesRead < totalEdgesInFile){
 
@@ -393,6 +396,10 @@ public class KochManager implements Observer {
                     }
 
                     totalEdgesRead = totalEdgesInFile;
+                }
+
+                if(totalEdgesRead == totalEdgesInFile && isDoneReading) {
+                    totalEdgesRead = 0;
                 }
 
                 application.requestDrawEdges();
