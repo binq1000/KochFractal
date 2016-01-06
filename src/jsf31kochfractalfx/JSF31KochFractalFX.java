@@ -22,6 +22,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -239,7 +240,11 @@ public class JSF31KochFractalFX extends Application {
         // Create Koch manager and set initial level
         resetZoom();
         kochManager = new KochManager(this);
-        kochManager.changeLevel(currentLevel);
+        File f = new File("D:\\readThis.txt");
+        if (!f.exists()) {
+            kochManager.changeLevel(currentLevel);
+        }
+
 
         // Create the scene and add the grid pane
         Group root = new Group();
