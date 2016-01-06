@@ -41,6 +41,7 @@ public class writingToFileWithLevel implements Observer
     private ByteArrayOutputStream baos;
     //FileLocking
     FileLock lock = null;
+    private boolean isNew = true;
 
     public writingToFileWithLevel(int level, int soort)
     {
@@ -409,6 +410,7 @@ public class writingToFileWithLevel implements Observer
 
     //Write and read at the same time
     public void writeAndRead() {
+        isNew = true;
         TimeStamp ts = new TimeStamp();
         ts.setBegin();
         kf.generateBottomEdge();
@@ -447,6 +449,8 @@ public class writingToFileWithLevel implements Observer
         objecten.add(edges.size());
         objecten.add(edges);
         objecten.add(isEnd);
+        objecten.add(isNew);
+        isNew = false;
 
         byte[] bytes = null;
 
