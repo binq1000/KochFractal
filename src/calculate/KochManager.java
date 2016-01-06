@@ -371,8 +371,8 @@ public class KochManager implements Observer {
                 application.setCurrentLevel((Integer) objecten.get(0));
                 kf.setLevel((Integer) objecten.get(0));
                 //application.setTextCalc((String) objecten.get(1));
-                totalEdgesInFile = (Integer) objecten.get(1);
-                ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objecten.get(2);
+                totalEdgesInFile = (Integer) objecten.get(objecten.size() - 1);
+                ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objecten.get(1);
 
                 if (totalEdgesRead < totalEdgesInFile){
 
