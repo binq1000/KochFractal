@@ -56,6 +56,7 @@ public class KochManager implements Observer {
     private int totalEdgesRead = 0;
     private int totalEdgesInFile = 0;
     private boolean isDoneReading = false;
+    private boolean isNewFile = false;
     
     public KochManager(JSF31KochFractalFX application) {
         wdm = new WatchDirMain("D:\\", false, this);
@@ -384,6 +385,12 @@ public class KochManager implements Observer {
                 totalEdgesInFile = (Integer) objecten.get(1);
                 ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objecten.get(2);
                 isDoneReading = (Boolean) objecten.get(3);
+                isNewFile = (Boolean) objecten.get(4);
+
+                if(isNewFile == true){
+                    edges.clear();
+                    totalEdgesRead = 0;
+                }
 
                 if (totalEdgesRead < totalEdgesInFile){
 
@@ -396,10 +403,6 @@ public class KochManager implements Observer {
                     }
 
                     totalEdgesRead = totalEdgesInFile;
-                }
-
-                if(totalEdgesRead == totalEdgesInFile && isDoneReading) {
-                    totalEdgesRead = 0;
                 }
 
                 application.requestDrawEdges();
