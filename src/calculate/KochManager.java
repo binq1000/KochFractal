@@ -8,6 +8,7 @@ package calculate;
 import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -50,6 +51,8 @@ public class KochManager implements Observer {
 //    private FileReader fr;
 //    private BufferedReader br;
     private WatchDirMain wdm;
+    private int totalEdgesRead = 0;
+    private int totalEdgesInFile = 0;
     
     public KochManager(JSF31KochFractalFX application) {
         wdm = new WatchDirMain("D:\\", false, this);
@@ -60,6 +63,7 @@ public class KochManager implements Observer {
         kf.addObserver(this);
         edges = new ArrayList<Edge>();
 
+        startFileMapThread();
     }
 
     @Override
@@ -311,6 +315,74 @@ public class KochManager implements Observer {
 
         drawEdges();
         System.out.println("\nReading from Memory Mapped File is completed");
+
+    }
+
+    public void startFileMapThread(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                readFromFileMapWithLocking();
+            }
+        }).start();
+    }
+
+    public void readFromFileMapWithLocking() {
+        try {
+            RandomAccessFile memoryMappedFile = new RandomAccessFile("readThis.txt", "r");
+
+            //Mapping a file into memory
+            FileChannel fc = memoryMappedFile.getChannel();
+            FileLock lock = null;
+            do {
+                lock = fc.tryLock();
+
+                try {
+                    Thread.currentThread().sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            while(lock == null);
+
+            MappedByteBuffer out = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+
+            byte[] bytes = new byte[(int) fc.size()];
+
+            //reading from memory file in Java
+            out.get(bytes);
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+
+            ArrayList<Object> objecten = null;
+            try {
+                objecten = (ArrayList<Object>) ois.readObject();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            if(lock != null){
+                lock.release();
+            }
+
+
+            application.setCurrentLevel((Integer) objecten.get(0));
+            kf.setLevel((Integer) objecten.get(0));
+            //application.setTextCalc((String) objecten.get(1));
+            totalEdgesInFile = (Integer) objecten.get(1);
+            ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objecten.get(2);
+
+            edges.clear();
+            for (Edge e : edgesFromFile){
+                addEdge(e);
+            }
+
+            drawEdges();
+            System.out.println("\nReading from Memory Mapped File is completed");
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
 
     }
 
