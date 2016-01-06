@@ -319,6 +319,7 @@ public class KochManager implements Observer {
     }
 
     public void startFileMapThread(){
+        edges.clear();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -372,9 +373,17 @@ public class KochManager implements Observer {
             totalEdgesInFile = (Integer) objecten.get(1);
             ArrayList<Edge> edgesFromFile = (ArrayList<Edge>) objecten.get(2);
 
-            edges.clear();
-            for (Edge e : edgesFromFile){
-                addEdge(e);
+            if (totalEdgesRead < totalEdgesInFile){
+
+                int counter = 0;
+                for (Edge e : edgesFromFile){
+                    if(counter >= totalEdgesRead){
+                        addEdge(e);
+                    }
+                    counter++;
+                }
+
+                totalEdgesRead = totalEdgesInFile;
             }
 
             drawEdges();
