@@ -88,7 +88,7 @@ public class writingToFileWithLevel implements Observer
     public synchronized void addEdge(Edge e) {
         edges.add(e);
         if (soort == 6) {
-            writeSingleEdge();
+            writeSingleEdge(false);
         }
     }
 
@@ -414,6 +414,7 @@ public class writingToFileWithLevel implements Observer
         kf.generateBottomEdge();
         kf.generateRightEdge();
         kf.generateLeftEdge();
+        writeSingleEdge(true);
         ts.setEnd();
 //        objecten.add(ts.toString());
 
@@ -438,13 +439,14 @@ public class writingToFileWithLevel implements Observer
         }
     }
 
-    public synchronized void writeSingleEdge() {
+    public synchronized void writeSingleEdge(boolean isEnd) {
         createBaosAndOutBin();
 
         objecten.clear();
         objecten.add(level);
         objecten.add(edges.size());
         objecten.add(edges);
+        objecten.add(isEnd);
 
         byte[] bytes = null;
 
