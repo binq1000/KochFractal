@@ -9,14 +9,6 @@ import java.util.ArrayList;
 public class CalculateProtocol {
     private ArrayList<Edge> edges = new ArrayList<>();
 
-    private String[] clues = { "Turnip", "Little Old Lady", "Atch", "Who", "Who" };
-    private String[] answers = { "Turnip the heat, it's cold in here!",
-            "I didn't know you could yodel!",
-            "Bless you!",
-            "Is there an owl in here?",
-            "Is there an echo in here?" };
-
-
     public void processInput(int level, int kindOfCalculation) {
         //For kindOfCalculation:
         // 1 == Read AFTER write
