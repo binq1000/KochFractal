@@ -388,8 +388,9 @@ public class KochManager implements Observer {
 
             drawEdges();
             System.out.println("\nReading from Memory Mapped File is completed");
-        }
-        catch (IOException e){
+        } catch (FileNotFoundException fnfe){
+            fnfe.printStackTrace();
+        } catch (IOException e){
             e.printStackTrace();
         }
 
