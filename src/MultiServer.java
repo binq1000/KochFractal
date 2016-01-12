@@ -12,7 +12,7 @@ public class MultiServer
         boolean listening = true;
 
         try {
-            serverSocket = new ServerSocket(4444);
+            serverSocket = new ServerSocket(8189);
         }
         catch (IOException e) {
             System.err.println("Could not listen on port: 4444.");
