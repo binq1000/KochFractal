@@ -14,6 +14,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.*;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -22,6 +23,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import javax.xml.soap.Text;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -79,6 +82,11 @@ public class JSF31KochFractalFX extends Application {
     private Button buttonFitFractal;
     private Button buttonReadEdges;
     private Button buttonReadEdgesMap;
+    private Button buttonConfirmProtocol;
+
+    //Textfields
+    private TextField textFieldLevel;
+    private TextField textFieldProtocol;
     
     @Override
     public void start(Stage primaryStage) {
@@ -184,6 +192,31 @@ public class JSF31KochFractalFX extends Application {
             }
         });
         grid.add(buttonReadEdgesMap, 14, 8);
+
+        // Textfield where user can fill in level
+        /*textFieldLevel = new TextField();
+        grid.add(textFieldLevel, 14, 9);
+
+        // Textfield where user can fill in protocol
+        textFieldProtocol = new TextField();
+        grid.add(textFieldProtocol, 14, 10);*/
+
+        // Button where the player can confirm the given input
+        buttonConfirmProtocol = new Button();
+        buttonConfirmProtocol.setText("Confirm Protocol");
+        buttonConfirmProtocol.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent event)
+            {
+                try {
+                    doRightProtocol(event, 5, 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        grid.add(buttonConfirmProtocol, 14, 11);
 
         // Add mouse clicked event to Koch panel
         kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
@@ -320,11 +353,9 @@ public class JSF31KochFractalFX extends Application {
     }
     
     public void setTextCalc(String text) {
-        Platform.runLater(new Runnable()
-        {
+        Platform.runLater(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 labelCalcText.setText(text);
             }
         });
@@ -376,6 +407,10 @@ public class JSF31KochFractalFX extends Application {
 
     private void readEdgesFromFileMap(ActionEvent event) throws IOException {
         kochManager.readFromFileMap();
+    }
+
+    private void doRightProtocol(ActionEvent event, int level, int protocol){
+
     }
     
     private void kochPanelMouseClicked(MouseEvent event) {

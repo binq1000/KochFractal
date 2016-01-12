@@ -1,4 +1,6 @@
 import calculate.Edge;
+import calculate.KochFractal;
+import calculate.KochServerManager;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -7,14 +9,15 @@ import java.util.ArrayList;
  * Created by Kees on 06/01/2016.
  */
 public class CalculateProtocol {
+
     private ArrayList<Edge> edges = new ArrayList<>();
+    private KochServerManager ksm;
 
     public void processInput(int level, int kindOfCalculation) {
         //For kindOfCalculation:
         // 1 == Read AFTER write
         // 2 == Read DURING write
         // 3 == Zooming
-
 
         switch (kindOfCalculation){
             case 1: CalculateAllEdges(level);
@@ -28,15 +31,15 @@ public class CalculateProtocol {
         }
     }
 
-    public void CalculateAllEdges(int level) {
-
+    private void CalculateAllEdges(int level) {
+        ksm = new KochServerManager(1);
     }
 
-    public void CalculateEdgesPartial(int level) {
-
+    private void CalculateEdgesPartial(int level) {
+        ksm = new KochServerManager(2);
     }
 
-    public void Zoom(int level) {
-
+    private void Zoom(int level) {
+        ksm = new KochServerManager(3);
     }
 }
