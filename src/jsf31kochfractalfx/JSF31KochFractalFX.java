@@ -22,8 +22,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
+import java.util.HashMap;
 
 /**
  *
@@ -459,6 +460,38 @@ public class JSF31KochFractalFX extends Application {
     public void disableButtons() {
         buttonFitFractal.setDisable(true);
         buttonReadEdges.setDisable(true);
+    }
+
+
+    public void sendToServer(int level, int protocol) {
+        HashMap<Integer, Integer> levelWithProtocol = new HashMap<>();
+        levelWithProtocol.put(level, protocol);
+
+        try
+        {
+            Socket s = new Socket("localhost", 8189);
+            try {
+                OutputStream outStream = s.getOutputStream();
+                InputStream inStream = s.getInputStream();
+
+                ObjectOutputStream out = new ObjectOutputStream(outStream);
+                ObjectInputStream in = new ObjectInputStream(inStream);
+
+                System.out.println("Sending data");
+                out.writeObject(levelWithProtocol);
+                out.flush();
+            }
+            finally
+            {
+                s.close();
+            }
+
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
 
