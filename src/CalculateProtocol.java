@@ -38,14 +38,14 @@ public class CalculateProtocol {
     }
 
     private void CalculateAllEdges() {
-        ksm = new KochServerManager(1, socket);
+        ksm = new KochServerManager(1, level, socket);
     }
 
     private void CalculateEdgesPartial() {
-        ksm = new KochServerManager(2, socket);
+        ksm = new KochServerManager(2, level, socket);
     }
 
     private void Zoom() {
-        ksm = new KochServerManager(3, socket);
+        ksm = new KochServerManager(3, level, socket);
     }
 }

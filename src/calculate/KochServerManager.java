@@ -17,17 +17,18 @@ public class KochServerManager implements Observer
     private ArrayList<Edge> edges;
     private int protocol;
     private Socket socket;
+    private int level;
 
     //For returning stuff
-    OutputStream outStream;
-    ObjectOutputStream out;
+    private OutputStream outStream;
+    private ObjectOutputStream out;
 
 
-    public KochServerManager(int protocol, Socket socket) {
+    public KochServerManager(int protocol, int level, Socket socket) {
         System.out.println("Created a KochServerManager");
         this.protocol = protocol;
         this.socket = socket;
-
+        this.level = level;
 
         try
         {
@@ -42,6 +43,7 @@ public class KochServerManager implements Observer
 
         kochFractal = new KochFractal();
         kochFractal.addObserver(this);
+        kochFractal.setLevel(level);
         edges = new ArrayList<>();
 
         if(protocol == 1){
