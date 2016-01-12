@@ -210,7 +210,7 @@ public class JSF31KochFractalFX extends Application {
             public void handle(ActionEvent event)
             {
                 try {
-                    doRightProtocol(event, 5, 1);
+                    //TODO add methode Tim
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -407,10 +407,6 @@ public class JSF31KochFractalFX extends Application {
 
     private void readEdgesFromFileMap(ActionEvent event) throws IOException {
         kochManager.readFromFileMap();
-    }
-
-    private void doRightProtocol(ActionEvent event, int level, int protocol){
-
     }
     
     private void kochPanelMouseClicked(MouseEvent event) {
