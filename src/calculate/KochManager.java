@@ -68,7 +68,7 @@ public class KochManager implements Observer {
         kf.addObserver(this);
         edges = new ArrayList<Edge>();
 
-        startFileMapThread();
+        //startFileMapThread();
     }
 
     @Override

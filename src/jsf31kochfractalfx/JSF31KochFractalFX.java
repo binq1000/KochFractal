@@ -27,6 +27,7 @@ import javax.xml.soap.Text;
 import java.awt.*;
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -493,34 +494,11 @@ public class JSF31KochFractalFX extends Application {
         buttonReadEdges.setDisable(true);
     }
     public void sendToServer(int level, int protocol) {
-        HashMap<Integer, Integer> levelWithProtocol = new HashMap<>();
-        levelWithProtocol.put(level, protocol);
+        ArrayList<Integer> levelWithProtocol = new ArrayList<>();
+        levelWithProtocol.add(level);
+        levelWithProtocol.add(protocol);
 
-        try
-        {
-            Socket s = new Socket("localhost", 8189);
-            try {
-                OutputStream outStream = s.getOutputStream();
-                InputStream  inStream  = s.getInputStream();
-
-                ObjectOutputStream out = new ObjectOutputStream(outStream);
-                ObjectInputStream  in  = new ObjectInputStream(inStream);
-
-                System.out.println("Sending data");
-                out.writeObject(levelWithProtocol);
-                out.flush();
-            }
-            finally
-            {
-                s.close();
-            }
-
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
+        SocketClient sc = new SocketClient(levelWithProtocol);
     }
 
     /**

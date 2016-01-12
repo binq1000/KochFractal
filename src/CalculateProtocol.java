@@ -3,6 +3,7 @@ import calculate.KochFractal;
 import calculate.KochServerManager;
 
 import java.lang.reflect.Array;
+import java.net.Socket;
 import java.util.ArrayList;
 
 /**
@@ -12,35 +13,39 @@ public class CalculateProtocol {
 
     private ArrayList<Edge> edges = new ArrayList<>();
     private KochServerManager ksm;
+    private int level;
+    private Socket socket;
 
-    public void processInput(int level, int kindOfCalculation) {
+    public void processInput(int level, int kindOfCalculation, Socket socket) {
         //For kindOfCalculation:
         // 1 == Read AFTER write
         // 2 == Read DURING write
         // 3 == Zooming
 
+        this.level = level;
+        this.socket = socket;
+
         switch (kindOfCalculation){
-            case 1: CalculateAllEdges(level);
+            case 1: CalculateAllEdges();
                 break;
-            case 2: CalculateEdgesPartial(level);
+            case 2: CalculateEdgesPartial();
                 break;
-            case 3: Zoom(level);
+            case 3: Zoom();
                 break;
             default: System.out.println("Wrong number");
                 break;
         }
     }
 
-    private void CalculateAllEdges(int level) {
-        ksm = new KochServerManager(1);
+    private void CalculateAllEdges() {
+        ksm = new KochServerManager(1, socket);
     }
 
-    private void CalculateEdgesPartial(int level) {
-        ksm = new KochServerManager(2);
-
+    private void CalculateEdgesPartial() {
+        ksm = new KochServerManager(2, socket);
     }
 
-    private void Zoom(int level) {
-        ksm = new KochServerManager(3);
+    private void Zoom() {
+        ksm = new KochServerManager(3, socket);
     }
 }
