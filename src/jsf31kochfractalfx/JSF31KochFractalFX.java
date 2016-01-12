@@ -48,6 +48,7 @@ public class JSF31KochFractalFX extends Application {
     // Koch manager
     // TO DO: Create class KochManager in package calculate
     private KochManager kochManager;
+    private SocketClient sc;
     
     // Current level of Koch fractal
     private int currentLevel = 1;
@@ -379,6 +380,17 @@ public class JSF31KochFractalFX extends Application {
         });
     }
 
+    public void requestDrawEdgesSC() {
+        Platform.runLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                sc.drawEdges();
+            }
+        });
+    }
+
     
     private void increaseLevelButtonActionPerformed(ActionEvent event) {
         if (currentLevel < 12) {
@@ -498,7 +510,7 @@ public class JSF31KochFractalFX extends Application {
         levelWithProtocol.add(level);
         levelWithProtocol.add(protocol);
 
-        SocketClient sc = new SocketClient(levelWithProtocol);
+        sc = new SocketClient(levelWithProtocol, this);
     }
 
     /**

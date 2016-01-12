@@ -60,7 +60,7 @@ public class KochServerManager implements Observer
     }
 
     public void writeAllEdges() {
-        System.out.printf("Starting to write all edges");
+        System.out.println("Starting to write all edges");
         kochFractal.generateBottomEdge();
         kochFractal.generateLeftEdge();
         kochFractal.generateRightEdge();

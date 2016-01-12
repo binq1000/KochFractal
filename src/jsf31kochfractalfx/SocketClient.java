@@ -1,6 +1,7 @@
 package jsf31kochfractalfx;
 
 import calculate.Edge;
+import timeutil.TimeStamp;
 
 import java.io.*;
 import java.net.Socket;
@@ -20,26 +21,29 @@ public class SocketClient
 
     private ArrayList<Edge> edges;
 
-    public SocketClient(ArrayList<Integer> levelWithProtocol) {
+    private JSF31KochFractalFX application;
+
+    public SocketClient(ArrayList<Integer> levelWithProtocol, JSF31KochFractalFX application) {
         this.levelWithProtocol = levelWithProtocol;
         edges = new ArrayList<>();
+        this.application = application;
 
         try
         {
             Socket s = new Socket("localhost", 8189);
             try {
                 outStream = s.getOutputStream();
-                inStream = s.getInputStream();
-
                 out = new ObjectOutputStream(outStream);
-                in = new ObjectInputStream(inStream);
 
                 System.out.println("Sending data");
                 out.writeObject(levelWithProtocol);
                 out.flush();
 
+                inStream = s.getInputStream();
+                in = new ObjectInputStream(inStream);
+
                 edges = (ArrayList<Edge>) in.readObject();
-                drawEdges();
+                application.requestDrawEdgesSC();
             }
             catch (ClassNotFoundException e)
             {
@@ -56,9 +60,25 @@ public class SocketClient
         {
             e.printStackTrace();
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void drawEdges() {
         //Draw the edges here!
+        System.out.println("Starting to draw the edges!");
+        application.clearKochPanel();
+
+        TimeStamp ts = new TimeStamp();
+        ts.setBegin();
+        for (Edge e : edges)
+        {
+            application.drawEdge(e);
+        }
+        ts.setEnd();
+        application.setTextDraw(ts.toString());
+
+        application.enableButtons();
     }
 }
