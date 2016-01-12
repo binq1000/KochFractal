@@ -34,6 +34,10 @@ public class KochServerManager implements Observer
         kochFractal.generateLeftEdge();
         kochFractal.generateRightEdge();
 
-        //Send Edges here
+        sendEdges();
+    }
+
+    public void sendEdges(){
+
     }
 }
