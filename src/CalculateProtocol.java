@@ -37,6 +37,7 @@ public class CalculateProtocol {
 
     private void CalculateEdgesPartial(int level) {
         ksm = new KochServerManager(2);
+
     }
 
     private void Zoom(int level) {

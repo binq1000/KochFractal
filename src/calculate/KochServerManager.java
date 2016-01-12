@@ -20,6 +20,12 @@ public class KochServerManager implements Observer
         kochFractal.addObserver(this);
         edges = new ArrayList<>();
 
+        if(protocol == 1){
+            writeAllEdges();
+        }
+        else if(protocol == 2){
+            writeEdgeForEdge();
+        }
     }
 
     @Override
@@ -35,6 +41,10 @@ public class KochServerManager implements Observer
         kochFractal.generateRightEdge();
 
         sendEdges();
+    }
+
+    public void writeEdgeForEdge() {
+
     }
 
     public void sendEdges(){
