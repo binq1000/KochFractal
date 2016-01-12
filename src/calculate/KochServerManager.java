@@ -1,5 +1,6 @@
 package calculate;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -8,13 +9,31 @@ import java.util.Observer;
  */
 public class KochServerManager implements Observer
 {
-    public KochServerManager() {
-        //Constructor
+    private KochFractal kochFractal;
+    private ArrayList<Edge> edges;
+    private int protocol;
+
+    public KochServerManager(int protocol) {
+        this.protocol = protocol;
+
+        kochFractal = new KochFractal();
+        kochFractal.addObserver(this);
+        edges = new ArrayList<>();
+
     }
 
     @Override
-    public void update(Observable observable, Object o)
+    public synchronized void update(Observable o, Object o1)
     {
+        Edge e = (Edge)o1;
+        edges.add(e);
+    }
 
+    public void writeAllEdges() {
+        kochFractal.generateBottomEdge();
+        kochFractal.generateLeftEdge();
+        kochFractal.generateRightEdge();
+
+        //Send Edges here
     }
 }
