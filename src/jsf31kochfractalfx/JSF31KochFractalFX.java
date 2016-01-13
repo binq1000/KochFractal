@@ -449,8 +449,23 @@ public class JSF31KochFractalFX extends Application {
     }
     
     private void kochPanelMouseClicked(MouseEvent event) {
-        if (Math.abs(event.getX() - startPressedX) < 1.0 && 
-            Math.abs(event.getY() - startPressedY) < 1.0) {
+//        if (Math.abs(event.getX() - startPressedX) < 1.0 &&
+//            Math.abs(event.getY() - startPressedY) < 1.0) {
+//            double originalPointClickedX = (event.getX() - zoomTranslateX) / zoom;
+//            double originalPointClickedY = (event.getY() - zoomTranslateY) / zoom;
+//            if (event.getButton() == MouseButton.PRIMARY) {
+//                zoom *= 2.0;
+//            } else if (event.getButton() == MouseButton.SECONDARY) {
+//                zoom /= 2.0;
+//            }
+//            zoomTranslateX = (int) (event.getX() - originalPointClickedX * zoom);
+//            zoomTranslateY = (int) (event.getY() - originalPointClickedY * zoom);
+//            kochManager.drawEdges();
+//        }
+
+        //TODO this is for MultiServer, revert this later
+        if (Math.abs(event.getX() - startPressedX) < 1.0 &&
+                Math.abs(event.getY() - startPressedY) < 1.0) {
             double originalPointClickedX = (event.getX() - zoomTranslateX) / zoom;
             double originalPointClickedY = (event.getY() - zoomTranslateY) / zoom;
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -460,7 +475,8 @@ public class JSF31KochFractalFX extends Application {
             }
             zoomTranslateX = (int) (event.getX() - originalPointClickedX * zoom);
             zoomTranslateY = (int) (event.getY() - originalPointClickedY * zoom);
-            kochManager.drawEdges();
+
+            sc.drawEdges();
         }
     }                                      
 
