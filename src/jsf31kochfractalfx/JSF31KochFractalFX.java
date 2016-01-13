@@ -216,8 +216,9 @@ public class JSF31KochFractalFX extends Application {
             public void handle(ActionEvent event)
             {
                 try {
-                    //int level = textFieldLevel.
-                    sendToServer(8, 2);
+                    int level = Integer.parseInt(textFieldLevel.getText());
+                    int protocol = Integer.parseInt(textFieldProtocol.getText());
+                    sendToServer(level, protocol);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
