@@ -15,6 +15,7 @@ public class SocketClient
     private ArrayList<Integer> levelWithProtocol;
     private OutputStream outStream;
     private ObjectOutputStream out;
+    private Socket s;
 
     private InputStream inStream;
     private ObjectInputStream in;
@@ -30,7 +31,7 @@ public class SocketClient
 
         try
         {
-            Socket s = new Socket("localhost", 8189);
+            s = new Socket("localhost", 8189);
             try {
                 outStream = s.getOutputStream();
                 out = new ObjectOutputStream(outStream);
@@ -42,10 +43,19 @@ public class SocketClient
                 inStream = s.getInputStream();
                 in = new ObjectInputStream(inStream);
 
-                edges = (ArrayList<Edge>) in.readObject();
-                application.requestDrawEdgesSC();
+                switch (levelWithProtocol.get(1)){
+                    case 1: receiveAllEdges();
+                        break;
+                    case 2: receivePartsOfEdges();
+                        break;
+                    case 3: receiveZoom();
+                        break;
+                    default: System.out.println("Wrong number");
+                        break;
+                }
+
             }
-            catch (ClassNotFoundException e)
+            catch (Exception e)
             {
                 e.printStackTrace();
             }
@@ -63,6 +73,71 @@ public class SocketClient
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void receiveAllEdges() {
+        try {
+            edges = (ArrayList<Edge>) in.readObject();
+            application.requestDrawEdgesSC();
+        }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void receivePartsOfEdges() {
+        boolean done = false;
+        Object inObject = null;
+        while (!done) {
+            try {
+                System.out.println("Reading Object");
+                inObject = in.readObject();
+                System.out.println("Object succesfully read");
+                if (inObject instanceof Edge) {
+
+//                    level = (int) ((ArrayList) inObject).get(0);
+//                    protocol = (int) ((ArrayList) inObject).get(1);
+//
+//                    System.out.println("Calling ProcessInput!");
+//                    calculateProtocol.processInput(level, protocol, socket);
+                } else if (inObject instanceof String){
+                    done = true;
+                    System.out.println("Done sending.");
+                }
+                else {
+                    System.out.println("Unidentified object has been send");
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                System.out.println("Object not known");
+            }
+            catch (EOFException eo) {
+                System.out.println("Got another EOFEXception!");
+                //Internet tells me to do this, dont think it's good though
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        try
+        {
+            in.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void receiveZoom() {
+
     }
 
     public void drawEdges() {

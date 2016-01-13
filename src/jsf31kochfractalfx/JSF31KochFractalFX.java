@@ -391,6 +391,17 @@ public class JSF31KochFractalFX extends Application {
         });
     }
 
+    public void requestDrawSingleEdge(Edge e) {
+        Platform.runLater(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                drawEdge(e);
+            }
+        });
+    }
+
     
     private void increaseLevelButtonActionPerformed(ActionEvent event) {
         if (currentLevel < 12) {

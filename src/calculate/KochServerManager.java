@@ -59,6 +59,10 @@ public class KochServerManager implements Observer
     {
         Edge e = (Edge)o1;
         edges.add(e);
+
+        if (protocol == 2) {
+            sendSingleEdge(e);
+        }
     }
 
     public void writeAllEdges() {
@@ -71,7 +75,32 @@ public class KochServerManager implements Observer
     }
 
     public void writeEdgeForEdge() {
+        System.out.println("Starting to write all edges");
+        kochFractal.generateBottomEdge();
+        kochFractal.generateLeftEdge();
+        kochFractal.generateRightEdge();
 
+        String endString = "Ended";
+
+        try
+        {
+            out.writeObject(endString);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendSingleEdge(Edge e) {
+        try {
+            out.writeObject(e);
+            out.flush();
+        }
+        catch (IOException e1)
+        {
+            e1.printStackTrace();
+        }
     }
 
     public void sendEdges(){
