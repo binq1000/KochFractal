@@ -16,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.input.*;
@@ -197,12 +198,14 @@ public class JSF31KochFractalFX extends Application {
         grid.add(buttonReadEdgesMap, 14, 8);
 
         // Textfield where user can fill in level
-        /*textFieldLevel = new TextField();
+        textFieldLevel = new TextField();
+        textFieldLevel.setMaxWidth(40);
         grid.add(textFieldLevel, 14, 9);
 
         // Textfield where user can fill in protocol
         textFieldProtocol = new TextField();
-        grid.add(textFieldProtocol, 14, 10);*/
+        textFieldProtocol.setMaxWidth(40);
+        grid.add(textFieldProtocol, 14, 10);
 
         // Button where the player can confirm the given input
         buttonConfirmProtocol = new Button();
@@ -213,6 +216,7 @@ public class JSF31KochFractalFX extends Application {
             public void handle(ActionEvent event)
             {
                 try {
+                    //int level = textFieldLevel.
                     sendToServer(8, 2);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -381,11 +385,9 @@ public class JSF31KochFractalFX extends Application {
     }
 
     public void requestDrawEdgesSC() {
-        Platform.runLater(new Runnable()
-        {
+        Platform.runLater(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 sc.drawEdges();
             }
         });
