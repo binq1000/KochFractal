@@ -94,6 +94,7 @@ public class SocketClient
     public void receivePartsOfEdges() {
         boolean done = false;
         Object inObject = null;
+        application.clearKochPanel();
         while (!done) {
             try {
                 System.out.println("Reading Object");
