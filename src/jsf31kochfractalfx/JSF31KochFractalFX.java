@@ -66,6 +66,9 @@ public class JSF31KochFractalFX extends Application {
     private Label lblLeftCalc;
     private Label lblRightCalc;
     private Label lblBottomCalc;
+
+    private Label lblInputLevel;
+    private Label lblInputProtocol;
     
     // Koch panel and its size
     private Canvas kochPanel;
@@ -197,10 +200,18 @@ public class JSF31KochFractalFX extends Application {
         });
         grid.add(buttonReadEdgesMap, 14, 8);
 
+        //Level input label
+        lblInputLevel = new Label("Level");
+        grid.add(lblInputLevel, 13, 9);
+
         // Textfield where user can fill in level
         textFieldLevel = new TextField();
         textFieldLevel.setMaxWidth(40);
         grid.add(textFieldLevel, 14, 9);
+
+        //Protocol input label
+        lblInputProtocol = new Label("Protocol");
+        grid.add(lblInputProtocol, 13, 10);
 
         // Textfield where user can fill in protocol
         textFieldProtocol = new TextField();
