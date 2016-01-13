@@ -100,7 +100,7 @@ public class SocketClient
                 inObject = in.readObject();
                 System.out.println("Object succesfully read");
                 if (inObject instanceof Edge) {
-
+                    application.drawEdge((Edge) inObject);
 //                    level = (int) ((ArrayList) inObject).get(0);
 //                    protocol = (int) ((ArrayList) inObject).get(1);
 //

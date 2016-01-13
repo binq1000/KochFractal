@@ -213,7 +213,7 @@ public class JSF31KochFractalFX extends Application {
             public void handle(ActionEvent event)
             {
                 try {
-                    sendToServer(5, 1);
+                    sendToServer(8, 2);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
